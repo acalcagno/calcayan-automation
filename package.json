@@ -1,0 +1,30 @@
+{
+  "name": "calcayan-automation",
+  "version": "1.0.0",
+  "description": "software para la automatización del control de fermentación y madurado de cerveza artesanal",
+  "main": "app.js",
+  "scripts": {
+    "test": "testear"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/acalcagno/calcayan-automation.git"
+  },
+  "keywords": [
+    "automatizacion",
+    "cerveza",
+    "control",
+    "fermentacion",
+    "madurado",
+    "temperaturas"
+  ],
+  "author": "agustin calcagno",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/acalcagno/calcayan-automation/issues"
+  },
+  "homepage": "https://github.com/acalcagno/calcayan-automation#readme",
+  "dependencies": {
+    "express": "^4.16.2"
+  }
+}
