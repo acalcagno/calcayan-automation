@@ -4,7 +4,8 @@
   "description": "software para la automatización del control de fermentación y madurado de cerveza artesanal",
   "main": "app.js",
   "scripts": {
-    "test": "testear"
+    "test": "testear",
+    "start": "node app.js"
   },
   "engines": {
     "node": "6.10.3",
