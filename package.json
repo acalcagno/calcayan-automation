@@ -9,8 +9,8 @@
     "mocha": "^2.5.3"
   },
   "scripts": {
-    "test": "mocha --timeout 10000",
-    "start": "node app.js"
+    "test": "./node_modules/.bin/mocha --reporter spec",
+    "start": "node index.js"
   },
   "engines": {
     "node": "6.10.3",

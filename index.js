@@ -12,8 +12,8 @@ app.use(bodyParser.json({ type: 'application/json'}));
 
 
 
-app.get('/', function (req, res) {
-    res.send('Hello World!');
+app.post('/', function (req, res) {
+    res.send("test");
 });
 
 app.listen(PORT, function () {
