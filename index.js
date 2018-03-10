@@ -11,12 +11,20 @@ app.use(bodyParser.text());
 app.use(bodyParser.json({ type: 'application/json'}));
 
 app.get('/', function (req, res) {
-    res.send("post");
+    res.send("get");
 });
 
 
 app.post('/', function (req, res) {
-    res.send("get");
+    res.send({"CONTACTORES":[{"contactor":"1","estado":"on"},
+        {"contactor":"2","estado":"on"},
+        {"contactor":"3","estado":"on"},
+        {"contactor":"4","estado":"off"},
+        {"contactor":"5","estado":"on"},
+        {"contactor":"6","estado":"off"},
+        {"contactor":"7","estado":"on"},
+        {"contactor":"8","estado":"off"}]
+    });
 });
 
 app.listen(PORT, function () {
