@@ -10,10 +10,13 @@ app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.text());
 app.use(bodyParser.json({ type: 'application/json'}));
 
+app.post('/', function (req, res) {
+    res.send("post");
+});
 
 
 app.post('/', function (req, res) {
-    res.send("test");
+    res.send("get");
 });
 
 app.listen(PORT, function () {
