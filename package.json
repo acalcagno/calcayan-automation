@@ -3,8 +3,13 @@
   "version": "1.0.0",
   "description": "software para la automatización del control de fermentación y madurado de cerveza artesanal",
   "main": "app.js",
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "chai-http": "^2.0.1",
+    "mocha": "^2.5.3"
+  },
   "scripts": {
-    "test": "testear",
+    "test": "mocha --timeout 10000",
     "start": "node app.js"
   },
   "engines": {
@@ -30,6 +35,7 @@
   },
   "homepage": "https://github.com/acalcagno/calcayan-automation#readme",
   "dependencies": {
-    "express": "^4.16.2"
+    "express": "^4.16.2",
+    "morgan": "^1.9.0"
   }
 }
