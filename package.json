@@ -2,7 +2,7 @@
   "name": "calcayan-automation",
   "version": "1.0.0",
   "description": "software para la automatización del control de fermentación y madurado de cerveza artesanal",
-  "main": "app.js",
+  "main": "index.js",
   "devDependencies": {
     "chai": "^3.5.0",
     "chai-http": "^2.0.1",
