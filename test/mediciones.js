@@ -1,18 +1,42 @@
 var expect    = require("chai").expect;
 var mediciones = require("../app/mediciones");
 
-describe("mediciones", function() {
-    describe("cuando el fermentador 1 esta caliente", function() {
-        it("abre la electrovalvula de frio del fermentador 1", function() {
-            var electroValvula1Frio = mediciones.nuevas_mediciones([30]);
-            expect(electroValvula1Frio).to.equal("abierta");
+describe("mediciones: ", function() {
+    var acciones;
+    describe("cuando hay un solo fermentador", function() {
+        beforeEach(function () {
+            acciones = mediciones.nuevas_mediciones([{"temperatura": "30"}]);
         });
-    });
 
-    describe("cuando un fermentador esta frio", function() {
-        it("cierra la electrovalvula de frio del fermentador 1", function() {
-            var electroValvula1 = mediciones.nuevas_mediciones([5]);
-            expect(electroValvula1).to.equal("cerrada");
+        describe("y esta caliente", function () {
+            it("abre la electrovalvula de frio", function () {
+                var electroValvula1Frio = acciones[0];
+                expect(electroValvula1Frio.estado).to.equal("abierta");
+            });
+
+            it("enciende la bomba", function () {
+                var bomba = acciones[1];
+                expect(bomba.estado).to.equal("encendida");
+            });
+        });
+
+        describe("y esta en temperatura", function () {
+            beforeEach(function () {
+                acciones = mediciones.nuevas_mediciones([{"temperatura": "20"}]);
+            });
+            it("cierra la electrovalvula de frio", function () {
+                var electroValvula1 = acciones[0];
+                expect(electroValvula1.estado).to.equal("cerrada");
+            });
+            it("apaga la bomba", function () {
+                var bomba = acciones[1];
+                expect(bomba.estado).to.equal("apagada");
+            });
+        });
+
+        it("identifica claramente a la electrovalvula y a la bomba", function() {
+            expect(acciones[0].dispositivo).to.equal("electrovalvula_1");
+            expect(acciones[1].dispositivo).to.equal("bomba");
         });
     });
 });
