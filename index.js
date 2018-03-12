@@ -1,34 +1,30 @@
 const PORT = process.env.PORT || 5000
 
 var express = require('express');
-var app = express();
+var index = express();
 var bodyParser = require('body-parser');
+var modulo_mediciones = require("./app/mediciones");
 
+index.use(bodyParser.json());
+index.use(bodyParser.urlencoded({extended: true}));
+index.use(bodyParser.text());
+index.use(bodyParser.json({ type: 'indexlication/json'}));
 
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({extended: true}));
-app.use(bodyParser.text());
-app.use(bodyParser.json({ type: 'application/json'}));
-
-app.get('/', function (req, res) {
+index.get('/', function (req, res) {
     res.send("get");
 });
 
 
-app.post('/', function (req, res) {
-    res.send({"CONTACTORES":[{"contactor":"1","estado":"on"},
-        {"contactor":"2","estado":"on"},
-        {"contactor":"3","estado":"on"},
-        {"contactor":"4","estado":"off"},
-        {"contactor":"5","estado":"on"},
-        {"contactor":"6","estado":"off"},
-        {"contactor":"7","estado":"on"},
-        {"contactor":"8","estado":"off"}]
-    });
+index.post('/', function (req, res) {
+    var req_body = req.body;
+    var mediciones = req_body.mediciones;
+
+    var test = modulo_mediciones.nuevas_mediciones(mediciones);
+    res.send({"acciones_a_realizar": test});
 });
 
-app.listen(PORT, function () {
-    console.log(`Example app listening on port ${ PORT }`);
+index.listen(PORT, function () {
+    console.log(`Example index listening on port ${ PORT }`);
 });
 
-module.exports = app; // for testing
+module.exports = index; // for testing
