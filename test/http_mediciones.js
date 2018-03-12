@@ -15,7 +15,7 @@ describe('/POST mediciones', function()  {
             .end(function(err, res) {
                 res.should.have.status(200);
                 res.body.acciones_a_realizar.should.be.a('array');
-                res.body.acciones_a_realizar.length.should.be.eql(2);
+                res.body.acciones_a_realizar.length.should.be.eql(3);
                 done();
         });
     });
