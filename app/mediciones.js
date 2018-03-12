@@ -1,20 +1,20 @@
 exports.nuevas_mediciones = function(mediciones) {
     var acciones = [];
-    var estado_de_la_bomba = "apagada";
+    var accion_de_la_bomba = "apagar";
     for (var i = 0; i < mediciones.length; i++) {
         if (mediciones[i].temperatura >= 21) {
-            acciones.push({"dispositivo": "electrovalvula_" + (i+1).toString(), "estado": "abierta"});
-            estado_de_la_bomba = "encendida";
+            acciones.push({"dispositivo": "electrovalvula_" + (i+1).toString(), "accion": "abrir"});
+            accion_de_la_bomba = "encender";
         } else {
-            acciones.push({"dispositivo": "electrovalvula_" + (i+1).toString(), "estado": "cerrada"});
+            acciones.push({"dispositivo": "electrovalvula_" + (i+1).toString(), "accion": "cerrar"});
         }
     }
-    acciones.push({ "dispositivo": "bomba","estado": estado_de_la_bomba});
+    acciones.push({ "dispositivo": "bomba","accion": accion_de_la_bomba});
 
-    var estado_chiller = "apagado"
+    var accion_chiller = "apagar";
 
-    //if (chiller) -> estado_chiller = "encendido";
-    acciones.push({ "dispositivo": "chiller","estado": estado_chiller});
+    //if (chiller) -> accion_chiller = "encendido";
+    acciones.push({ "dispositivo": "chiller","accion": accion_chiller});
     return acciones;
 };
 
