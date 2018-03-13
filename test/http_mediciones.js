@@ -7,7 +7,7 @@ chai.use(chaiHttp);
 
 describe('/POST mediciones', function()  {
     it('it should POST', function(done)  {
-        var mediciones = {mediciones:[{sensor:'fermenador1', temperatura: '30'}]};
+        var mediciones = {mediciones:[{sensor:'1', temperatura: '30'}]};
 
         chai.request(server)
             .post('/')

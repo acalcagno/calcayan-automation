@@ -16,11 +16,11 @@ index.get('/', function (req, res) {
 
 
 index.post('/', function (req, res) {
-    var req_body = req.body;
+    /*var req_body = req.body;
     var mediciones = req_body.mediciones;
 
-    var test = modulo_mediciones.nuevas_mediciones(mediciones);
-    res.send({"acciones_a_realizar": test});
+    var test = modulo_mediciones.nuevas_mediciones(mediciones);*/
+    res.send({"acciones_a_realizar": "hola amigo"});
 });
 
 index.listen(PORT, function () {
