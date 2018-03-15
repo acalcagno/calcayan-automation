@@ -6,11 +6,16 @@ exports.nuevas_mediciones = function(mediciones, config, dispositivos) {
     var accion_sobre_el_calentador = "apagar";
 
     dispositivos = dispositivos || [];
+    config = config || [{"dispositivo":"calentador", "temp_ideal": "30", "tolerancia":"5"}, {"dispositivo":"chiller", "temp_ideal": "30", "tolerancia":"5"}];
 
     for (var i = 0; i < mediciones.length; i++) {
 
         if (mediciones[i].sensor == "chiller") {
-            if (mediciones[i].temperatura >= 10) {
+            var config_chiller = buscar_config("chiller", config);
+            if (mediciones[i].temperatura >= config_chiller.temp_ideal + config_chiller.tolerancia) {
+                accion_sobre_el_chiller = "encender";
+                accion_de_la_bomba_del_chiller = "encender";
+            } else if (mediciones[i].temperatura >= config_chiller.temp_ideal && dispositivo_desde("chiller", dispositivos).estado == "encendido") {
                 accion_sobre_el_chiller = "encender";
                 accion_de_la_bomba_del_chiller = "encender";
             }

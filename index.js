@@ -18,8 +18,9 @@ index.get('/', function (req, res) {
 index.post('/mediciones/', function (req, res) {
     var req_body = req.body;
     var mediciones = req_body.mediciones;
+    var config;/// = [];
 
-    var acciones = modulo_mediciones.nuevas_mediciones(mediciones);
+    var acciones = modulo_mediciones.nuevas_mediciones(mediciones, config);
     res.send({"acciones_a_realizar": acciones});
 });
 
