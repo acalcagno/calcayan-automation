@@ -165,8 +165,23 @@ describe("mediciones: ", function() {
                         var accion_chiller = acciones_sobre(acciones, "chiller")[0];
                         expect(accion_chiller.accion).to.equal("apagar");
                     });
+                });
 
-                })
+                describe("si ya estuvo encendido, y luego se apago", function() {
+                    var dispositivos;
+                    beforeEach(function () {
+                        dispositivos = [ {"dispositivo":"chiller", "estado": "encendido"} ]; //estaba encendido
+                        acciones = mediciones.nuevas_mediciones([{"sensor":"chiller", "temperatura": -10}], config, dispositivos);
+                    });
+                    it("debería continuar apagado", function() {
+                        var accion_chiller = acciones_sobre(acciones, "chiller")[0];
+                        expect(accion_chiller.accion).to.equal("apagar"); //y luego se apago
+
+                        acciones = mediciones.nuevas_mediciones([{"sensor":"chiller", "temperatura": -9}], config, dispositivos);
+                        var accion_chiller = acciones_sobre(acciones, "chiller")[0];
+                        expect(accion_chiller.accion).to.equal("apagar");
+                    })
+                });
             });
         });
         describe("cuando esta configurado a 15 grados, con tolerancia de 5 grados", function  () {

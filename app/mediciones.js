@@ -15,7 +15,7 @@ exports.nuevas_mediciones = function(mediciones, config, dispositivos) {
             if (mediciones[i].temperatura >= config_chiller.temp_ideal + config_chiller.tolerancia) {
                 accion_sobre_el_chiller = "encender";
                 accion_de_la_bomba_del_chiller = "encender";
-            } else if (mediciones[i].temperatura >= config_chiller.temp_ideal && dispositivo_desde("chiller", dispositivos).estado == "encendido") {
+            } else if (mediciones[i].temperatura > config_chiller.temp_ideal && dispositivo_desde("chiller", dispositivos).estado == "encendido") {
                 accion_sobre_el_chiller = "encender";
                 accion_de_la_bomba_del_chiller = "encender";
             }
@@ -56,6 +56,7 @@ exports.nuevas_mediciones = function(mediciones, config, dispositivos) {
         };
     }
     acciones.push({"dispositivo": "chiller", "accion": accion_sobre_el_chiller});
+    dispositivo_desde("chiller", dispositivos).estado = accion_sobre_el_chiller;
     acciones.push({"dispositivo": "bomba_chiller","accion": accion_de_la_bomba_del_chiller});
     acciones.push({"dispositivo": "calentador", "accion": accion_sobre_el_calentador});
     dispositivo_desde("calentador", dispositivos).estado = accion_sobre_el_calentador;
