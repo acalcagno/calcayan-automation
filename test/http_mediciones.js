@@ -10,7 +10,7 @@ describe('/POST mediciones', function()  {
         var mediciones = {mediciones:[{sensor:'fermentador1', temperatura: '30'}]};
 
         chai.request(server)
-            .post('/')
+            .post('/mediciones/')
             .send(mediciones)
             .end(function(err, res) {
                 res.should.have.status(200);
@@ -24,7 +24,7 @@ describe('/POST mediciones', function()  {
         var mediciones = {mediciones:[{sensor:'chiller', temperatura: '-5'}, {sensor:'fermentador1', temperatura: '30'}]};
 
         chai.request(server)
-            .post('/')
+            .post('/mediciones/')
             .send(mediciones)
             .end(function(err, res) {
                 res.should.have.status(200);

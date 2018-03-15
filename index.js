@@ -15,7 +15,7 @@ index.get('/', function (req, res) {
 });
 
 
-index.post('/', function (req, res) {
+index.post('/mediciones/', function (req, res) {
     var req_body = req.body;
     var mediciones = req_body.mediciones;
 
