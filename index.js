@@ -86,7 +86,7 @@ MongoClient.connect('mongodb://heroku_jtg8f10j:m8eofmkrgrvh3uqop33frikkig@ds1290
 
 
 log = function(req, res) {
-    var req_log = { "hora": new Date().toString(), "route-path": req.route.path, "request-method": req.method, "headers": req.headers, "body": req.body };
+    var req_log = { "hora": new Date().toString(), "route-path": req.originalUrl, "request-method": req.method, "headers": req.headers, "body": req.body };
     db.collection("requests").insertOne(req_log, function(err, res) {
         if (err) return console.log(err)
         console.log('saved to database')
