@@ -16,7 +16,7 @@ index.set('view engine', 'ejs');
 var db;
 
 index.get('/', function (req, res) {
-    log(req);
+    //log(req);
     res.send("get");
 });
 
