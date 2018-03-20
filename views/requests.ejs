@@ -1,0 +1,40 @@
+<html><body>
+<ul class="requests">
+    <% for(var i=0; i<requests.length; i++) {%>
+
+    <table border="1">
+        <tr>
+            <td><b>Hora:</b>
+                <%= requests[i].hora %>
+            </td>
+        </tr><tr>
+            <td><b>route-path:</b>
+                <%= requests[i]["route-path"] %>
+            </td>
+        </tr><tr>
+            <td><b>method:</b>
+                <%= requests[i]["request-method"] %></td>
+        </tr>
+        <tr>
+            <td><b>headers</b><hr>
+                <% var keys = [];
+                    for(var key in requests[i].headers){
+                        keys.push(key);
+                    }
+                for(var j=0; j<keys.length; j++) {
+                %>
+                  <%=keys[j];%>:
+                  <%=requests[i].headers[keys[j]]%><br>
+                <% } %>
+            </td>
+        </tr><tr>
+            <td><b>body:</b><hr><%=JSON.stringify(requests[i].body)%></td>
+
+        </tr>
+    </table>
+<br><br>
+
+
+    <% } %>
+</ul>
+</body></html>

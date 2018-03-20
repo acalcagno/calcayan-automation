@@ -6,11 +6,13 @@
   "devDependencies": {
     "chai": "^3.5.0",
     "chai-http": "^2.0.1",
-    "mocha": "^2.5.3"
+    "mocha": "^2.5.3",
+    "nodemon": "^1.17.2"
   },
   "scripts": {
     "test": "./node_modules/.bin/mocha --reporter spec",
-    "start": "node index.js"
+    "start": "node index.js",
+    "dev": "nodemon index.js"
   },
   "engines": {
     "node": "6.10.3",
@@ -35,8 +37,10 @@
   },
   "homepage": "https://github.com/acalcagno/calcayan-automation#readme",
   "dependencies": {
+    "ejs": "^2.5.7",
     "express": "^4.16.2",
     "mongodb": "^3.0.4",
+    "mongoose": "^5.0.10",
     "morgan": "^1.9.0"
   }
 }

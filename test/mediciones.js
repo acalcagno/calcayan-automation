@@ -183,6 +183,20 @@ describe("mediciones: ", function() {
                     })
                 });
             });
+            describe("cuando se configura para descansar 5 minutos luego de trabajar 20 minutos", function() {
+                beforeEach(function () {
+                    config = [{"dispositivo":"chiller", "temp_ideal": -10, "tolerancia":5, "tiempo_maximo_funcionamiento_continuo":20, "tiempo_reposicion_por_funcionamiento_continuo":5}];
+                    dispositivos = [ {"dispositivo":"chiller", "estado": "encendido"} ]; //estaba encendido
+                    acciones = mediciones.nuevas_mediciones([{"sensor":"chiller", "temperatura": 2, "hora_actual": new Date().getTime() - 20*60 }], config, dispositivos); //medida tomada hace 20 minutos;
+                });
+                it("se apaga luego de funcionar ininterrumpidamente durante ese tiempo", function() {
+                    var accion_chiller = acciones_sobre(acciones, "chiller")[0];
+
+                    acciones = mediciones.nuevas_mediciones([{"sensor":"chiller", "temperatura": 2, "hora_actual": new Date().getTime() }], config, dispositivos); //medida tomada hace 20 minutos;
+
+                    expect(accion_chiller.accion).to.equal("apagar");
+                });
+            });
         });
         describe("cuando esta configurado a 15 grados, con tolerancia de 5 grados", function  () {
             beforeEach(function () {
