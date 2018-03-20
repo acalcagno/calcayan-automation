@@ -20,6 +20,23 @@ index.get('/', function (req, res) {
     res.send("get");
 });
 
+index.get("*", function(err, req, next) {
+    console.log("test");
+    console.log(err);
+    log(req.req);
+
+
+    next();
+});
+
+index.post("*", function(err, req, next) {
+    console.log("test");
+    console.log(err);
+    log(req.req);
+
+
+    next();
+});
 
 index.get('/requests/', function(req, res) {
     //res.sendFile(__dirname + '/app/requests.html')
@@ -46,7 +63,7 @@ index.get('/requests/', function(req, res) {
 
 index.post('/mediciones/', function (req, res) {
 
-    log(req);
+    //log(req);
     var req_body = req.body;
     var mediciones = req_body.mediciones;
     var config;/// = [];
@@ -73,7 +90,7 @@ log = function(req, res) {
     db.collection("requests").insertOne(req_log, function(err, res) {
         if (err) return console.log(err)
         console.log('saved to database')
-        res.redirect('/')
+        //res.redirect('/')
     });
     //http_requests_db_log.save_log(req_log);
 }
