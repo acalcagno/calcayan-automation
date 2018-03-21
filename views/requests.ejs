@@ -1,35 +1,43 @@
 <html><body>
-<ul class="requests">
-    <% for(var i=0; i<requests.length; i++) {%>
+<ul class="https">
+    <% for(var i=0; i< https.length; i++) {%>
 
     <table border="1">
+        <tr><td width="50%">request</td><td>response</td></tr>
         <tr>
-            <td><b>Hora:</b>
-                <%= requests[i].hora %>
+            <td><b>hora:</b>
+                <%= https[i].request.hora.getDate().toString() + "/" + (https[i].request.hora.getMonth() + 1).toString() + '/' + https[i].request.hora.getFullYear().toString() +  ' ' +  https[i].request.hora.getHours() + ':' + https[i].request.hora.getMinutes() + ':' + https[i].request.hora.getSeconds() %>
             </td>
+            <td><b>Status Code:</b><%= https[i].response.statusCode%></td>
         </tr><tr>
             <td><b>route-path:</b>
-                <%= requests[i]["route-path"] %>
-            </td>
+                <%= https[i].request["route-path"] %>
+            </td><td><b>Status Message:</b><%= https[i].response.statusMessage%></td>
         </tr><tr>
             <td><b>method:</b>
-                <%= requests[i]["request-method"] %></td>
+                <%= https[i].request["request-method"] %></td>
+            <td rowspan="4" valign="top"><b>Body:</b><hr><%= https[i].response.body%></td>
         </tr>
         <tr>
             <td><b>headers</b><hr>
                 <% var keys = [];
-                    for(var key in requests[i].headers){
+                    for(var key in https[i].request.headers){
                         keys.push(key);
                     }
-                for(var j=0; j<keys.length; j++) {
+                for(var j=0; j < keys.length; j++) {
                 %>
                   <%=keys[j];%>:
-                  <%=requests[i].headers[keys[j]]%><br>
+                  <%=https[i].request.headers[keys[j]]%><br>
                 <% } %>
             </td>
-        </tr><tr>
-            <td><b>body:</b><hr><%=JSON.stringify(requests[i].body)%></td>
-
+        </tr>
+        <tr>
+            <td><b>body:</b><hr><%=JSON.stringify(https[i].request.body)%></td>
+        </tr>
+        </td>
+        <td>
+            response
+        </td>
         </tr>
     </table>
 <br><br>

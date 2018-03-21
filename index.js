@@ -3,6 +3,7 @@ const PORT = process.env.PORT || 5000
 var express = require('express');
 var index = express();
 var bodyParser = require('body-parser');
+
 var modulo_mediciones = require("./app/mediciones");
 var http_requests_db_log = require("./app/http_requests_db_log");
 
@@ -10,56 +11,28 @@ index.use(bodyParser.json());
 index.use(bodyParser.urlencoded({extended: true}));
 index.use(bodyParser.text());
 index.use(bodyParser.json({ type: 'indexlication/json'}));
+index.use(log);
 
 index.set('view engine', 'ejs');
 
 var db;
+var MongoClient = require('mongodb').MongoClient;
 
 index.get('/', function (req, res) {
     //log(req);
     res.send("get");
 });
 
-index.get("*", function(err, req, next) {
-    console.log("test");
-    console.log(err);
-    log(req.req);
-
-
-    next();
-});
-
-index.post("*", function(err, req, next) {
-    console.log("test");
-    console.log(err);
-    log(req.req);
-
-
-    next();
-});
-
 index.get('/requests/', function(req, res) {
-    //res.sendFile(__dirname + '/app/requests.html')
 
-    db.collection('requests').find().toArray((err, result) => {
-        if (err) return console.log(err)
-        res.render('requests.ejs', {requests: result})
-})
-
-
-    /*
-    var cursor = db.collection('requests').find();
-
-
-    var arr = db.collection('requests').find().toArray(function(err, results) {
-
-        res.render('index.ejs', {quotes: result});
-        //console.log(results)
-        // send HTML file populated with quotes here
-    })
-*/
-
+    db.collection('https').find().toArray(function(err, result)  {
+        if (err) {
+            return console.log(err)
+        };
+        res.render('requests.ejs', {https: result});
+    });
 });
+
 
 index.post('/mediciones/', function (req, res) {
 
@@ -73,26 +46,86 @@ index.post('/mediciones/', function (req, res) {
 
 });
 
-var db;
-var MongoClient = require('mongodb').MongoClient;
+function log(req, res, next) {
 
-MongoClient.connect('mongodb://heroku_jtg8f10j:m8eofmkrgrvh3uqop33frikkig@ds129028.mlab.com:29028/heroku_jtg8f10j', (err, client) => {
-    if (err) return console.log(err)
-        db = client.db('heroku_jtg8f10j') // whatever your database name is*/
+    var req_log = { "hora": new Date(), "route-path": req.originalUrl, "request-method": req.method, "headers": req.headers, "body": req.body };
+
+
+    var send = res.send;
+    res.send = function (body) {
+        res.body = body
+        send.call(this, body);
+    };
+
+    const cleanup = function() {
+        res.removeListener('finish', logFn)
+        res.removeListener('close', abortFn)
+        res.removeListener('error', errorFn)
+    }
+
+    const logFn = function() {
+        cleanup()
+        const logger = getLoggerForStatusCode(res.statusCode);
+        var res_log = {"statusCode": res.statusCode, "statusMessage": res.statusMessage, "body": res.body };
+        var https = { "request": req_log, "response": res_log };
+        db.collection("https").insertOne(https, function(err, res) {
+            if (err) return console.log(err)
+            console.log('saved to database')
+        });
+    }
+
+    const abortFn = function(){
+        cleanup();
+        var res_log = {"statusCode": "ABORTED BY CLIENT", "statusMessage": 'Request aborted by the client', "body": res.body };
+        var https = { "request": req_log, "response": res_log };
+        db.collection("https").insertOne(https, function(err, res) {
+            if (err) return console.log(err)
+            console.log('saved to database')
+        });
+        //console.warn('Request aborted by the client')
+    }
+
+    const errorFn = function(){
+        cleanup()
+        var res_log = {"statusCode": "PIPELINE ERROR", "statusMessage": 'Request pipeline error: ${err}', "body": res.body };
+        var https = { "request": req_log, "response": res_log };
+        db.collection("https").insertOne(https, function(err, res) {
+            if (err) return console.log(err)
+            console.log('saved to database')
+        });
+    }
+
+    res.on('finish', logFn) // successful pipeline (regardless of its response)
+    res.on('close', abortFn) // aborted pipeline
+    res.on('error', errorFn) // pipeline internal error
+
+
+    next();
+}
+
+getLoggerForStatusCode = function(statusCode) {
+    if (statusCode >= 500) {
+        return console.error.bind(console)
+    }
+    if (statusCode >= 400) {
+        return console.warn.bind(console)
+    }
+
+    return console.log.bind(console)
+}
+
+
+
+MongoClient.connect('mongodb://heroku_jtg8f10j:m8eofmkrgrvh3uqop33frikkig@ds129028.mlab.com:29028/heroku_jtg8f10j', function(err, client) {
+    if (err) {
+        return console.log(err);
+    }
+
+    db = client.db('heroku_jtg8f10j'); // whatever your database name is*/
     index.listen(PORT, function () {
         console.log(`Example index listening on port ${ PORT }`);
     });
 });
 
-
-log = function(req, res) {
-    var req_log = { "hora": new Date().toString(), "route-path": req.originalUrl, "request-method": req.method, "headers": req.headers, "body": req.body };
-    db.collection("requests").insertOne(req_log, function(err, res) {
-        if (err) return console.log(err)
-        console.log('saved to database')
-        //res.redirect('/')
-    });
-    //http_requests_db_log.save_log(req_log);
-}
 
 module.exports = index; // for testing
