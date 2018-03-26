@@ -6,6 +6,7 @@ var bodyParser = require('body-parser');
 
 var modulo_mediciones = require("./app/mediciones");
 var http_requests_db_log = require("./app/http_requests_db_log");
+var http_api_to_model = require("./app/http_api_to_model");
 
 index.use(bodyParser.json());
 index.use(bodyParser.urlencoded({extended: true}));
@@ -42,7 +43,8 @@ index.post('/mediciones/', function (req, res) {
     var config;/// = [];
 
     var acciones = modulo_mediciones.nuevas_mediciones(mediciones, config);
-    res.send({"acciones_a_realizar": acciones});
+    var respuesta = http_api_to_model.get_api_response({"acciones_a_realizar": acciones});
+    res.send(respuesta);
 
 });
 
@@ -94,6 +96,7 @@ function log(req, res, next) {
             console.log('saved to database')
         });
     }
+
 
     res.on('finish', logFn) // successful pipeline (regardless of its response)
     res.on('close', abortFn) // aborted pipeline
