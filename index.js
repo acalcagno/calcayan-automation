@@ -50,6 +50,8 @@ index.post('/mediciones/', function (req, res) {
 
 function log(req, res, next) {
 
+
+
     var req_log = { "hora": new Date(), "route-path": req.originalUrl, "request-method": req.method, "headers": req.headers, "body": req.body };
 
 
@@ -67,6 +69,8 @@ function log(req, res, next) {
 
     const logFn = function() {
         cleanup()
+        if (req_log["route-path"] == "/requests") return; //no loguear la consulta de logs.
+
         const logger = getLoggerForStatusCode(res.statusCode);
         var res_log = {"statusCode": res.statusCode, "statusMessage": res.statusMessage, "body": res.body };
         var https = { "request": req_log, "response": res_log };
