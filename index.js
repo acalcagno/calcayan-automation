@@ -37,7 +37,7 @@ index.get('/requests/', function(req, res) {
 
 index.post('/mediciones/', function (req, res) {
 
-    //log(req);
+    log(req);
     var req_body = req.body;
     var mediciones = req_body.mediciones;
     var config;/// = [];
