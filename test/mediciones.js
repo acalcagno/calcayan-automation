@@ -285,6 +285,18 @@ describe("mediciones: ", function() {
                     expect(electroValvula1.accion).to.equal("encender");
                 });
             });
+
+
+            //se deja para automatizar mas adelante porque se prioriza el control manual
+            describe.skip('y esta a 21 grados ', function() {
+                xit("si estaba apagado", function () {})
+                xit("si estaba prendido", function () {})
+            });
+            //se deja para automatizar mas adelante porque se prioriza el control manual
+            describe.skip('y esta a 19 grados ', function() {
+                xit("si estaba apagado", function () {})
+                xit("si estaba prendido", function () {})
+            });
         });
 
         describe("configurado para fermentacion baja (7 grados, +/- 2)", function() {
