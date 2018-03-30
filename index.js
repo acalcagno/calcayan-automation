@@ -19,8 +19,8 @@ index.set('view engine', 'ejs');
 var db;
 var MongoClient = require('mongodb').MongoClient;
 
-index.get('/', function (req, res) {
-    res.send("get");
+index.get('/panel_de_control', function (req, res) {
+    res.render('panel_de_control.ejs', { config: []} );
 });
 
 index.get('/requests/', function(req, res) {
