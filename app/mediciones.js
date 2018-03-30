@@ -93,6 +93,11 @@ exports.nuevas_mediciones = function(mediciones, config, dispositivos) {
         accion_de_la_bomba_del_chiller = config_bomba_chiller.accion;
     }
 
+    var config_calentador = buscar_config("calentador", config);
+    if (config_calentador.control == "manual") {
+        accion_sobre_el_calentador = config_calentador.accion;
+    }
+
     acciones.push({"dispositivo": "chiller", "accion": accion_sobre_el_chiller});
     dispositivo_desde("chiller", dispositivos).estado = accion_sobre_el_chiller;
     acciones.push({"dispositivo": "bomba_chiller","accion": accion_de_la_bomba_del_chiller});

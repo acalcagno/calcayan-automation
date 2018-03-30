@@ -113,6 +113,7 @@ describe("mediciones: ", function() {
             beforeEach(function () {
                 config = [{"dispositivo":"chiller", "temp_ideal": -10, "tolerancia":3}];
                 config.push({"dispositivo":"bomba_chiller", "control": "automatico"});
+                config.push({"dispositivo": "calentador", "control": "automatico"});
             });
             describe("si está a temperatura deseada (se miden -10)", function() {
                 beforeEach(function () {
@@ -205,6 +206,7 @@ describe("mediciones: ", function() {
             beforeEach(function () {
                 config = [{"dispositivo": "chiller", "temp_ideal": 15, "tolerancia": 5}];
                 config.push({"dispositivo":"bomba_chiller", "control": "automatico"});
+                config.push({"dispositivo": "calentador", "control": "automatico"});
             });
             describe("si está a temperatura deseada (se miden 15)", function() {
                 beforeEach(function () {
@@ -241,6 +243,7 @@ describe("mediciones: ", function() {
                 config = [{"dispositivo": "fermentador1", "temp_ideal": 20, "tolerancia":2}];
                 config.push({"dispositivo": "electrovalvula_frio_fermentador_1", "control": "automatico"})
                 config.push({"dispositivo":"bomba_chiller", "control": "automatico"});
+                config.push({"dispositivo": "calentador", "control": "automatico"});
             });
 
             describe("y esta caliente (se miden 30 grados)", function () {
@@ -310,6 +313,7 @@ describe("mediciones: ", function() {
                 config = [{"dispositivo": "fermentador1", "temp_ideal": 7, "tolerancia": 2}];
                 config.push({"dispositivo": "electrovalvula_frio_fermentador_1", "control": "automatico"});
                 config.push({"dispositivo": "bomba_chiller", "control": "automatico"});
+                config.push({"dispositivo": "calentador", "control": "automatico"});
 
             });
             describe("y esta caliente (se miden 10 grados)", function () {
@@ -398,6 +402,7 @@ describe("mediciones: ", function() {
                 config.push({"dispositivo":"fermentador" + i.toString(), "temp_ideal":20, "tolerancia":2});
                 config.push({"dispositivo": "electrovalvula_frio_fermentador_" + i.toString(), "control": "automatico"});
                 config.push({"dispositivo": "bomba_chiller", "control": "automatico"});
+                config.push({"dispositivo": "calentador", "control": "automatico"});
             }
             acciones = mediciones.nuevas_mediciones(medidas, config);
         });

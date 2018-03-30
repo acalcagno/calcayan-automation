@@ -1,15 +1,14 @@
 var expect  = require("chai").expect;
 var mediciones = require("../app/mediciones");
 
-
 describe("con un comando: ", function() {
-
     describe("tomo el control manual de una electrovalvula", function() {
         describe("y la seteo cerrada", function() {
             beforeEach(function () {
                 config = [{"dispositivo": "electrovalvula_frio_fermentador_1", "control": "manual", "accion": "cerrar"}];
                 config.push({"dispositivo": "fermentador1", "temp_ideal": 20, "tolerancia":2});
                 config.push({"dispositivo": "bomba_chiller", "control": "automatico"});
+                config.push({"dispositivo": "calentador", "control": "automatico"});
             });
             describe("si la temperatura de su fermentador es alta", function() {
                 beforeEach(function () {
@@ -38,6 +37,7 @@ describe("con un comando: ", function() {
                 config = [{"dispositivo": "electrovalvula_frio_fermentador_1", "control": "manual", "accion": "abrir"}];
                 config.push({"dispositivo": "fermentador1", "temp_ideal": 20, "tolerancia":2});
                 config.push({"dispositivo": "bomba_chiller", "control": "automatico"});
+                config.push({"dispositivo": "calentador", "control": "automatico"});
             });
             describe("si la temperatura de su fermentador es alta", function() {
                 beforeEach(function () {
@@ -61,12 +61,72 @@ describe("con un comando: ", function() {
             });
         });
     });
-    describe("cuando tomo el control manual de la bomba del chiller", function() {
+    describe("tomo el control manual del calentador", function() {
+        beforeEach(function () {
+            config = [];
+            config.push({"dispositivo":"bomba_chiller", "control": "automatico"});
+            config.push({"dispositivo":"calentador", "temp_ideal": 30, "tolerancia":5, "control":"manual"});
+
+        });
+        describe("y lo seteo encendido", function() {
+            beforeEach(function () {
+                buscar_config("calentador", config).accion = "encender";
+            });
+            describe("si esta caliente", function() {
+                beforeEach(function () {
+                    medidas = [{"sensor":"calentador", "temperatura": 40}];
+                    acciones = mediciones.nuevas_mediciones(medidas, config);
+                });
+                it("se mantiene encendido", function() {
+                    var accion_calentador = acciones_sobre(acciones, "calentador")[0];
+                    expect(accion_calentador.accion).to.equal("encender");
+                });
+            });
+            describe("si esta frio", function() {
+                beforeEach(function () {
+                    medidas = [{"sensor":"calentador", "temperatura": 5}];
+                    acciones = mediciones.nuevas_mediciones(medidas, config);
+                });
+                it("se mantiene encendido", function() {
+                    var accion_calentador = acciones_sobre(acciones, "calentador")[0];
+                    expect(accion_calentador.accion).to.equal("encender");
+                });
+            });
+        });
+        describe("y lo seteo apagado", function() {
+            beforeEach(function () {
+                buscar_config("calentador", config).accion = "apagar";
+            });
+            describe("si esta caliente", function() {
+                beforeEach(function () {
+                    medidas = [{"sensor":"calentador", "temperatura": 40}];
+                    acciones = mediciones.nuevas_mediciones(medidas, config);
+                });
+
+                it("se mantiene apagado", function() {
+                    var accion_calentador = acciones_sobre(acciones, "calentador")[0];
+                    expect(accion_calentador.accion).to.equal("apagar");
+                });
+            });
+            describe("si esta frio", function() {
+                beforeEach(function () {
+                    medidas = [{"sensor":"calentador", "temperatura": 5}];
+                    acciones = mediciones.nuevas_mediciones(medidas, config);
+                });
+                it("se mantiene apagado", function() {
+                    var accion_calentador = acciones_sobre(acciones, "calentador")[0];
+                    expect(accion_calentador.accion).to.equal("apagar");
+                });
+            });
+        })
+    });
+    describe("tomo el control manual de la bomba del chiller", function() {
         describe("y la seteo encendida", function() {
             beforeEach(function () {
                 config = [{"dispositivo": "electrovalvula_frio_fermentador_1", "control": "automatico"}];
                 config.push({"dispositivo": "bomba_chiller", "control": "manual", "accion": "encender"});
                 config.push({"dispositivo": "fermentador1", "temp_ideal": 20, "tolerancia":2});
+                config.push({"dispositivo": "calentador", "control": "automatico"});
             });
             describe("si la temperatura de un fermentador es alta", function() {
                 beforeEach(function () {
@@ -94,6 +154,7 @@ describe("con un comando: ", function() {
                 config = [{"dispositivo": "electrovalvula_frio_fermentador_1", "control": "automatico"}];
                 config.push({"dispositivo": "bomba_chiller", "control": "manual", "accion": "apagar"});
                 config.push({"dispositivo": "fermentador1", "temp_ideal": 20, "tolerancia":2});
+                config.push({"dispositivo": "calentador", "control": "automatico"});
             });
             describe("si la temperatura de un fermentador es alta", function() {
                 beforeEach(function () {
