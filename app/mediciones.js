@@ -6,7 +6,13 @@ exports.nuevas_mediciones = function(mediciones, config, dispositivos) {
     var accion_sobre_el_calentador = "apagar";
 
     dispositivos = dispositivos || [];
-    config = config || [{"dispositivo":"calentador", "temp_ideal": "30", "tolerancia":"5"}, {"dispositivo":"chiller", "temp_ideal": "30", "tolerancia":"5"}];
+
+    //config por defecto
+    config = config || [{"dispositivo":"calentador", "temp_ideal": "30", "tolerancia":"5"},
+        {"dispositivo":"chiller", "temp_ideal": "30", "tolerancia":"5"},
+        {"dispositivo":"fermentador1", "temp_ideal": "19", "tolerancia":"2"},
+        {"dispositivo":"fermentador2", "temp_ideal": "19", "tolerancia":"2"},
+        {"dispositivo":"fermentador3", "temp_ideal": "19", "tolerancia":"2"} ];
 
     for (var i = 0; i < mediciones.length; i++) {
 
@@ -27,19 +33,29 @@ exports.nuevas_mediciones = function(mediciones, config, dispositivos) {
                 accion_sobre_el_calentador = "encender";
             }
         } else if(mediciones[i].sensor.substring(0, "fermentador".length) == "fermentador" ) {
-            var nro_fermentador = mediciones[i].sensor.substr(mediciones[i].sensor.length-1, 1);
-            if (mediciones[i].temperatura >= 21) {
-                acciones.push({
-                    "dispositivo": "electrovalvula_frio_fermentador_" + nro_fermentador.toString(),
-                    "accion": "abrir"
-                });
-                accion_de_la_bomba_del_chiller = "encender";
-            } else {
+
+            var config_fermentador = buscar_config(mediciones[i].sensor, config);
+            /*
+            if (esta_manual) {
                 acciones.push({
                     "dispositivo": "electrovalvula_frio_fermentador_" + nro_fermentador.toString(),
                     "accion": "cerrar"
                 });
-            }
+            } else {*/
+                var nro_fermentador = mediciones[i].sensor.substr(mediciones[i].sensor.length-1, 1);
+                if (mediciones[i].temperatura >= config_fermentador.temp_ideal + config_fermentador.tolerancia) {
+                    acciones.push({
+                        "dispositivo": "electrovalvula_frio_fermentador_" + nro_fermentador.toString(),
+                        "accion": "abrir"
+                    });
+                    accion_de_la_bomba_del_chiller = "encender";
+                } else {
+                    acciones.push({
+                        "dispositivo": "electrovalvula_frio_fermentador_" + nro_fermentador.toString(),
+                        "accion": "cerrar"
+                    });
+                }
+            //}
 
             if (mediciones[i].temperatura < 17) {
                 acciones.push({

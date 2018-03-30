@@ -77,7 +77,7 @@ describe("mediciones: ", function() {
             });
         })
 
-        describe("cuando configurado a 50 con tolerancia - 5 grados", function()  {
+        describe("cuando esta configurado a 50 con tolerancia - 5 grados", function()  {
             beforeEach(function () {
                 config = [{"dispositivo":"calentador", "temp_ideal": "50", "tolerancia":5}];
             });
@@ -232,56 +232,106 @@ describe("mediciones: ", function() {
     });
 
     describe("cuando hay un solo fermentador", function() {
-        beforeEach(function () {
-            acciones = mediciones.nuevas_mediciones([{"sensor":"fermentador1","temperatura": 30}]);
-        });
-
-        describe("y esta caliente", function () {
-            it("abre la electrovalvula de frio", function () {
-                var electroValvula1Frio = acciones_sobre(acciones, "electrovalvula_frio_fermentador_1")[0];
-                expect(electroValvula1Frio.accion).to.equal("abrir");
-            });
-
-            it("cierra la electrovalvula de calor", function () {
-                var electroValvula1Calor = acciones_sobre(acciones, "electrovalvula_calor_fermentador_1")[0];
-                expect(electroValvula1Calor.accion).to.equal("cerrar");
-            });
-
-            it("enciende la bomba del chiller", function () {
-                var bomba = acciones_sobre(acciones, "bomba_chiller")[0];
-                expect(bomba.accion).to.equal("encender");
-            });
-        });
-
-        describe("y esta en temperatura deseada", function () {
+        describe("configurado para fermentacion alta (20 grados, +/- 2)", function() {
             beforeEach(function () {
-                acciones = mediciones.nuevas_mediciones([{"sensor":"fermentador1","temperatura": 20}]);
+                config = [{"dispositivo": "fermentador1", "temp_ideal": 20, "tolerancia":2}];
             });
-            it("cierra la electrovalvula de frio", function () {
-                var electroValvula1 = acciones_sobre(acciones, "electrovalvula_frio_fermentador_1")[0];
-                expect(electroValvula1.accion).to.equal("cerrar");
+
+            describe("y esta caliente (se miden 30 grados)", function () {
+                beforeEach(function () {
+                    acciones = mediciones.nuevas_mediciones([{"sensor":"fermentador1","temperatura": 30}], config);
+                });
+                it("abre la electrovalvula de frio", function () {
+                    var electroValvula1Frio = acciones_sobre(acciones, "electrovalvula_frio_fermentador_1")[0];
+                    expect(electroValvula1Frio.accion).to.equal("abrir");
+                });
+
+                it("cierra la electrovalvula de calor", function () {
+                    var electroValvula1Calor = acciones_sobre(acciones, "electrovalvula_calor_fermentador_1")[0];
+                    expect(electroValvula1Calor.accion).to.equal("cerrar");
+                });
+
+                it("enciende la bomba del chiller", function () {
+                    var bomba = acciones_sobre(acciones, "bomba_chiller")[0];
+                    expect(bomba.accion).to.equal("encender");
+                });
             });
-            it("apaga la bomba del chiler", function () {
-                var bomba = acciones_sobre(acciones, "bomba_chiller")[0];
-                expect(bomba.accion).to.equal("apagar");
+
+            describe("y esta en temperatura deseada (se miden 20 grados)", function () {
+                beforeEach(function () {
+                    acciones = mediciones.nuevas_mediciones([{"sensor":"fermentador1","temperatura": 20}], config);
+                });
+                it("cierra la electrovalvula de frio", function () {
+                    var electroValvula1 = acciones_sobre(acciones, "electrovalvula_frio_fermentador_1")[0];
+                    expect(electroValvula1.accion).to.equal("cerrar");
+                });
+                it("apaga la bomba del chiler", function () {
+                    var bomba = acciones_sobre(acciones, "bomba_chiller")[0];
+                    expect(bomba.accion).to.equal("apagar");
+                });
+            });
+
+            describe("y esta frio (se miden 15 grados)", function() {
+                beforeEach(function () {
+                    acciones = mediciones.nuevas_mediciones([{"sensor":"fermentador1","temperatura": 15}], config);
+                });
+                it("abre la electrovalvula de calor", function() {
+                    var electroValvula1 = acciones_sobre(acciones, "electrovalvula_calor_fermentador_1")[0];
+                    expect(electroValvula1.accion).to.equal("abrir");
+                });
+
+                it("enciende la bomba del calentador", function() {
+                    var electroValvula1 = acciones_sobre(acciones, "bomba_calentador")[0];
+                    expect(electroValvula1.accion).to.equal("encender");
+                });
             });
         });
-
-        describe("y esta frio", function() {
+        describe("configurado para fermentacion baja (7 grados, +/- 2)", function() {
             beforeEach(function () {
-                acciones = mediciones.nuevas_mediciones([{"sensor":"fermentador1","temperatura": 15}]);
+                config = [{"dispositivo": "fermentador1", "temp_ideal": 7, "tolerancia": 2}];
             });
-            it("abre la electrovalvula de calor", function() {
-                var electroValvula1 = acciones_sobre(acciones, "electrovalvula_calor_fermentador_1")[0];
-                expect(electroValvula1.accion).to.equal("abrir");
+            describe("y esta caliente (se miden 10 grados)", function () {
+                beforeEach(function () {
+                    acciones = mediciones.nuevas_mediciones([{"sensor": "fermentador1", "temperatura": 10}], config);
+                });
+                it("abre la electrovalvula de frio", function () {
+                    var electroValvula1Frio = acciones_sobre(acciones, "electrovalvula_frio_fermentador_1")[0];
+                    expect(electroValvula1Frio.accion).to.equal("abrir");
+                });
             });
 
-            it("enciende la valvula del calentador", function() {
-                var electroValvula1 = acciones_sobre(acciones, "bomba_calentador")[0];
-                expect(electroValvula1.accion).to.equal("encender");
-            })
-        })
+            describe("y esta en temperatura deseada (se miden 7 grados)", function () {
+                beforeEach(function () {
+                    acciones = mediciones.nuevas_mediciones([{"sensor":"fermentador1","temperatura": 7}], config);
+                });
+                it("cierra la electrovalvula de frio", function () {
+                    var electroValvula1 = acciones_sobre(acciones, "electrovalvula_frio_fermentador_1")[0];
+                    expect(electroValvula1.accion).to.equal("cerrar");
+                });
+                it("apaga la bomba del chiler", function () {
+                    var bomba = acciones_sobre(acciones, "bomba_chiller")[0];
+                    expect(bomba.accion).to.equal("apagar");
+                });
+            });
 
+            describe("y esta frio (se miden 2 grados)", function() {
+                beforeEach(function () {
+                    acciones = mediciones.nuevas_mediciones([{"sensor":"fermentador1","temperatura": 2}], config);
+                });
+                it("abre la electrovalvula de calor", function() {
+                    var electroValvula1 = acciones_sobre(acciones, "electrovalvula_calor_fermentador_1")[0];
+                    expect(electroValvula1.accion).to.equal("abrir");
+                });
+
+                it("enciende la bomba del calentador", function() {
+                    var electroValvula1 = acciones_sobre(acciones, "bomba_calentador")[0];
+                    expect(electroValvula1.accion).to.equal("encender");
+                });
+            });
+        });
+    });
+
+        /*
         it("identifica claramente a las acciones sobre las electrovalvulas", function() {
             expect(acciones[0].dispositivo).to.equal("electrovalvula_frio_fermentador_1");
             expect(acciones[1].dispositivo).to.equal("electrovalvula_calor_fermentador_1");
@@ -302,19 +352,21 @@ describe("mediciones: ", function() {
         it("identifica claramente a la accion sobre la bomba del calentador", function() {
             expect(acciones[5].dispositivo).to.equal("bomba_calentador");
         });
-    });
+        */
+
 
     describe("cuando hay N fermentadores", function() {
         var n;
         var desordenador = 3; //variable para emular parametros en un mal orden
+        var config = [];
         beforeEach(function () {
             medidas = [];
-            n = 7;
-
+            n = 3; // cantidad de fermentadores
             for (var i=desordenador; i < n+desordenador; i++) {
                 medidas.push({"sensor": "fermentador" + i.toString(), "temperatura": 18});
+                config.push({"dispositivo":"fermentador" + i.toString(), "temp_ideal":20, "tolerancia":2});
             }
-            acciones = mediciones.nuevas_mediciones(medidas);
+            acciones = mediciones.nuevas_mediciones(medidas, config);
         });
 
         it("deberia devolver acciones para N electrovalvulas de frio" , function() {
@@ -351,13 +403,13 @@ describe("mediciones: ", function() {
             it("deberia apagar la bomba de frio", function() {
                 var accion_sobre_bomba = acciones_sobre(acciones, "bomba_chiller")[0];
                 expect(accion_sobre_bomba.accion).to.equal("apagar");
-            })
+            });
         });
 
         describe("y hay alguno caliente", function(){
             beforeEach(function () {
                 medidas[2].temperatura = 30;
-                acciones = mediciones.nuevas_mediciones(medidas);
+                acciones = mediciones.nuevas_mediciones(medidas, config);
             });
             it("deberia encender la bomba de frio", function() {
                 var accion_sobre_bomba = acciones_sobre(acciones, "bomba_chiller")[0];
@@ -368,7 +420,7 @@ describe("mediciones: ", function() {
         describe("y hay alguno frio", function(){
             beforeEach(function () {
                 medidas[2].temperatura = 15;
-                acciones = mediciones.nuevas_mediciones(medidas);
+                acciones = mediciones.nuevas_mediciones(medidas, config);
             });
             it("solo ese tiene la electrovalvula abierta", function() {
                 var acciones_fermentadores = acciones_sobre(acciones, "electrovalvula_calor_fermentador");

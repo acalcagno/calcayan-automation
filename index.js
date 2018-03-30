@@ -12,7 +12,7 @@ index.use(bodyParser.json());
 index.use(bodyParser.urlencoded({extended: true}));
 index.use(bodyParser.text());
 index.use(bodyParser.json({ type: 'indexlication/json'}));
-index.use(log);
+//index.use(log);
 
 index.set('view engine', 'ejs');
 
@@ -20,12 +20,10 @@ var db;
 var MongoClient = require('mongodb').MongoClient;
 
 index.get('/', function (req, res) {
-    //log(req);
     res.send("get");
 });
 
 index.get('/requests/', function(req, res) {
-
     db.collection('https').find().toArray(function(err, result)  {
         if (err) {
             return console.log(err)
@@ -37,7 +35,6 @@ index.get('/requests/', function(req, res) {
 
 index.post('/mediciones/', function (req, res, next) {
 
-    //log(req, res);
     var req_body = req.body;
     var mediciones = req_body.mediciones;
     var config;/// = [];
@@ -50,10 +47,7 @@ index.post('/mediciones/', function (req, res, next) {
 
 function log(req, res, next) {
 
-
-
     var req_log = { "hora": new Date(), "route-path": req.originalUrl, "request-method": req.method, "headers": req.headers, "body": req.body };
-
 
     var send = res.send;
     res.send = function (body) {
