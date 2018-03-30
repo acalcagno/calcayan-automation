@@ -8,11 +8,19 @@ exports.nuevas_mediciones = function(mediciones, config, dispositivos) {
     dispositivos = dispositivos || [];
 
     //config por defecto
-    config = config || [{"dispositivo":"calentador", "temp_ideal": "30", "tolerancia":"5"},
-        {"dispositivo":"chiller", "temp_ideal": "30", "tolerancia":"5"},
-        {"dispositivo":"fermentador1", "temp_ideal": "19", "tolerancia":"2"},
-        {"dispositivo":"fermentador2", "temp_ideal": "19", "tolerancia":"2"},
-        {"dispositivo":"fermentador3", "temp_ideal": "19", "tolerancia":"2"} ];
+    config = config || [{"dispositivo":"calentador", "temp_ideal": 30, "tolerancia":5},
+        {"dispositivo":"chiller", "temp_ideal": 30, "tolerancia":5},
+        {"dispositivo":"bomba_chiller", "control": "automatico"},
+        {"dispositivo":"fermentador1", "temp_ideal": 19, "tolerancia":2},
+        {"dispositivo":"fermentador2", "temp_ideal": 19, "tolerancia":2},
+        {"dispositivo":"fermentador3", "temp_ideal": 19, "tolerancia":2},
+        {"dispositivo": "electrovalvula_frio_fermentador_1", "control": "automatico"},
+        {"dispositivo": "electrovalvula_frio_fermentador_2", "control": "automatico"},
+        {"dispositivo": "electrovalvula_frio_fermentador_3", "control": "automatico"},
+        {"dispositivo": "electrovalvula_calor_fermentador_1", "control": "automatico"},
+        {"dispositivo": "electrovalvula_calor_fermentador_2", "control": "automatico"},
+        {"dispositivo": "electrovalvula_calor_fermentador_3", "control": "automatico"}
+    ];
 
     for (var i = 0; i < mediciones.length; i++) {
 
@@ -34,29 +42,22 @@ exports.nuevas_mediciones = function(mediciones, config, dispositivos) {
             }
         } else if(mediciones[i].sensor.substring(0, "fermentador".length) == "fermentador" ) {
 
+            var nro_fermentador = mediciones[i].sensor.substr(mediciones[i].sensor.length-1, 1);
             var config_fermentador = buscar_config(mediciones[i].sensor, config);
-            /*
-            if (esta_manual) {
+            var config_electrovalvula_frio = buscar_config("electrovalvula_frio_fermentador_" + nro_fermentador.toString(), config);
+
+            if (mediciones[i].temperatura >= config_fermentador.temp_ideal + config_fermentador.tolerancia) {
+                acciones.push({
+                    "dispositivo": "electrovalvula_frio_fermentador_" + nro_fermentador.toString(),
+                    "accion": "abrir"
+                });
+                accion_de_la_bomba_del_chiller = "encender";
+            } else {
                 acciones.push({
                     "dispositivo": "electrovalvula_frio_fermentador_" + nro_fermentador.toString(),
                     "accion": "cerrar"
                 });
-            } else {*/
-                var nro_fermentador = mediciones[i].sensor.substr(mediciones[i].sensor.length-1, 1);
-                if (mediciones[i].temperatura >= config_fermentador.temp_ideal + config_fermentador.tolerancia) {
-                    acciones.push({
-                        "dispositivo": "electrovalvula_frio_fermentador_" + nro_fermentador.toString(),
-                        "accion": "abrir"
-                    });
-                    accion_de_la_bomba_del_chiller = "encender";
-                } else {
-                    acciones.push({
-                        "dispositivo": "electrovalvula_frio_fermentador_" + nro_fermentador.toString(),
-                        "accion": "cerrar"
-                    });
-                }
-            //}
-
+            }
             if (mediciones[i].temperatura < config_fermentador.temp_ideal - config_fermentador.tolerancia) {
                 acciones.push({
                     "dispositivo": "electrovalvula_calor_fermentador_" + nro_fermentador.toString(),
@@ -71,6 +72,27 @@ exports.nuevas_mediciones = function(mediciones, config, dispositivos) {
             }
         };
     }
+
+    //sobreescritura en caso de establecerse manualmente los valores
+    for (var i = 0; i < mediciones.length; i++) {
+        if(mediciones[i].sensor.substring(0, "fermentador".length) == "fermentador" ) {
+            var nro_fermentador = mediciones[i].sensor.substr(mediciones[i].sensor.length - 1, 1);
+            var config_ev = buscar_config("electrovalvula_frio_fermentador_" + nro_fermentador.toString(), config);
+
+            if(config_ev.control == "manual") {
+                var acciones_sobre_ev = acciones.filter(function(each) {
+                    return each.dispositivo == "electrovalvula_frio_fermentador_" + nro_fermentador.toString();
+                });
+                acciones_sobre_ev[0].accion = config_ev.accion;
+            }
+        }
+    }
+
+    var config_bomba_chiller =   buscar_config("bomba_chiller", config);
+    if (config_bomba_chiller.control == "manual") {
+        accion_de_la_bomba_del_chiller = config_bomba_chiller.accion;
+    }
+
     acciones.push({"dispositivo": "chiller", "accion": accion_sobre_el_chiller});
     dispositivo_desde("chiller", dispositivos).estado = accion_sobre_el_chiller;
     acciones.push({"dispositivo": "bomba_chiller","accion": accion_de_la_bomba_del_chiller});
