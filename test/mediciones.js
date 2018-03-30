@@ -286,6 +286,7 @@ describe("mediciones: ", function() {
                 });
             });
         });
+
         describe("configurado para fermentacion baja (7 grados, +/- 2)", function() {
             beforeEach(function () {
                 config = [{"dispositivo": "fermentador1", "temp_ideal": 7, "tolerancia": 2}];
@@ -297,6 +298,15 @@ describe("mediciones: ", function() {
                 it("abre la electrovalvula de frio", function () {
                     var electroValvula1Frio = acciones_sobre(acciones, "electrovalvula_frio_fermentador_1")[0];
                     expect(electroValvula1Frio.accion).to.equal("abrir");
+                });
+                it("cierra la electrovalvula de calor", function () {
+                    var electroValvula1Calor = acciones_sobre(acciones, "electrovalvula_calor_fermentador_1")[0];
+                    expect(electroValvula1Calor.accion).to.equal("cerrar");
+                });
+
+                it("enciende la bomba del chiller", function () {
+                    var bomba = acciones_sobre(acciones, "bomba_chiller")[0];
+                    expect(bomba.accion).to.equal("encender");
                 });
             });
 

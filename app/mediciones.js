@@ -57,7 +57,7 @@ exports.nuevas_mediciones = function(mediciones, config, dispositivos) {
                 }
             //}
 
-            if (mediciones[i].temperatura < 17) {
+            if (mediciones[i].temperatura < config_fermentador.temp_ideal - config_fermentador.tolerancia) {
                 acciones.push({
                     "dispositivo": "electrovalvula_calor_fermentador_" + nro_fermentador.toString(),
                     "accion": "abrir"
