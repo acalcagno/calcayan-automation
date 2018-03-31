@@ -1,5 +1,6 @@
 var expect  = require("chai").expect;
 var mediciones = require("../app/mediciones");
+var dispos_module = require("../app/dispositivos");
 
 
 describe("mediciones: ", function() {
@@ -7,11 +8,18 @@ describe("mediciones: ", function() {
     var medidas;
     var config;
     var dispositivos;
+    var dispos;
 
     describe("el calentador" , function() {
+        beforeEach(function () {
+            dispos = new dispos_module.Dispositivos();
+            config = [];
+        });
         describe("cuando esta configurado a 30 con tolerancia -5 grados", function()  {
             beforeEach(function () {
-                config = [{"dispositivo":"calentador", "temp_ideal": 30, "tolerancia":5}];
+                dispos.configurar({"dispositivo":"calentador", "temp_ideal": 30, "tolerancia":5});
+                dispos.configurar({"dispositivo":"bomba_chiller", "control": "automatico"});
+                config.push({"dispositivo":"calentador", "temp_ideal": 30, "tolerancia":5});
                 config.push({"dispositivo":"bomba_chiller", "control": "automatico"});
             });
             describe("y esta frio (se miden 10 grados)", function() {
@@ -80,7 +88,7 @@ describe("mediciones: ", function() {
 
         describe("cuando esta configurado a 50 con tolerancia - 5 grados", function()  {
             beforeEach(function () {
-                config = [{"dispositivo":"calentador", "temp_ideal": "50", "tolerancia":5}];
+                config.push({"dispositivo":"calentador", "temp_ideal": "50", "tolerancia":5});
                 config.push({"dispositivo":"bomba_chiller", "control": "automatico"});
             });
             describe("y esta frio (se miden 42 grados)", function() {
@@ -111,7 +119,7 @@ describe("mediciones: ", function() {
     describe("el chiller", function() {
         describe("cuando esta configurado a -10 grados, con tolerancia de 3 grados", function  () {
             beforeEach(function () {
-                config = [{"dispositivo":"chiller", "temp_ideal": -10, "tolerancia":3}];
+                config.push({"dispositivo":"chiller", "temp_ideal": -10, "tolerancia":3});
                 config.push({"dispositivo":"bomba_chiller", "control": "automatico"});
                 config.push({"dispositivo": "calentador", "control": "automatico"});
             });
