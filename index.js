@@ -5,6 +5,7 @@ var index = express();
 var bodyParser = require('body-parser');
 
 var modulo_mediciones = require("./app/mediciones");
+var dispos_module = require("./app/dispositivos");
 var http_requests_db_log = require("./app/http_requests_db_log");
 var http_api_to_model = require("./app/http_api_to_model");
 
@@ -37,7 +38,20 @@ index.post('/mediciones/', function (req, res, next) {
 
     var req_body = req.body;
     var mediciones = req_body.mediciones;
-    var config;/// = [];
+    var config = new dispos_module.Dispositivos(
+    [{"dispositivo":"calentador", "temp_ideal": 30, "tolerancia":5},
+        {"dispositivo":"chiller", "temp_ideal": 30, "tolerancia":5},
+        {"dispositivo":"bomba_chiller", "control": "automatico"},
+        {"dispositivo":"fermentador1", "temp_ideal": 19, "tolerancia":2},
+        {"dispositivo":"fermentador2", "temp_ideal": 19, "tolerancia":2},
+        {"dispositivo":"fermentador3", "temp_ideal": 19, "tolerancia":2},
+        {"dispositivo": "electrovalvula_frio_fermentador_1", "control": "automatico"},
+        {"dispositivo": "electrovalvula_frio_fermentador_2", "control": "automatico"},
+        {"dispositivo": "electrovalvula_frio_fermentador_3", "control": "automatico"},
+        {"dispositivo": "electrovalvula_calor_fermentador_1", "control": "automatico"},
+        {"dispositivo": "electrovalvula_calor_fermentador_2", "control": "automatico"},
+        {"dispositivo": "electrovalvula_calor_fermentador_3", "control": "automatico"}
+    ]);
 
     var acciones = modulo_mediciones.nuevas_mediciones(mediciones, config);
     var respuesta = http_api_to_model.get_api_response({"acciones_a_realizar": acciones});
