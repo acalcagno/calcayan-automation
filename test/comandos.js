@@ -11,6 +11,7 @@ describe("con un comando: ", function() {
                 dispos = new dispos_module.Dispositivos([{"dispositivo": "electrovalvula_frio_fermentador_1", "control": "manual", "accion": "cerrar"}]);
                 dispos.configurar({"dispositivo": "fermentador1", "temp_ideal": 20, "tolerancia":2});
                 dispos.configurar({"dispositivo": "bomba_chiller", "control": "automatico"});
+                dispos.configurar({"dispositivo": "bomba_calentador", "control": "automatico"});
                 dispos.configurar({"dispositivo": "calentador", "control": "automatico"});
                 dispos.configurar({"dispositivo": "chiller", "control": "automatico"});
             });
@@ -41,6 +42,7 @@ describe("con un comando: ", function() {
                 dispos = new dispos_module.Dispositivos([{"dispositivo": "electrovalvula_frio_fermentador_1", "control": "manual", "accion": "abrir"}]);
                 dispos.configurar({"dispositivo": "fermentador1", "temp_ideal": 20, "tolerancia":2});
                 dispos.configurar({"dispositivo": "bomba_chiller", "control": "automatico"});
+                dispos.configurar({"dispositivo": "bomba_calentador", "control": "automatico"});
                 dispos.configurar({"dispositivo": "calentador", "control": "automatico"});
                 dispos.configurar({"dispositivo": "chiller", "control": "automatico"});
             });
@@ -71,6 +73,7 @@ describe("con un comando: ", function() {
             dispos = new dispos_module.Dispositivos()
             dispos.configurar({"dispositivo":"bomba_chiller", "control": "automatico"});
             dispos.configurar({"dispositivo":"calentador", "temp_ideal": 30, "tolerancia":5, "control":"manual"});
+            dispos.configurar({"dispositivo": "bomba_calentador", "control": "automatico"});
             dispos.configurar({"dispositivo": "chiller", "control": "automatico"});
 
         });
@@ -133,6 +136,7 @@ describe("con un comando: ", function() {
                 dispos.configurar({"dispositivo": "bomba_chiller", "control": "manual", "accion": "encender"});
                 dispos.configurar({"dispositivo": "fermentador1", "temp_ideal": 20, "tolerancia":2});
                 dispos.configurar({"dispositivo": "calentador", "control": "automatico"});
+                dispos.configurar({"dispositivo": "bomba_calentador", "control": "automatico"});
                 dispos.configurar({"dispositivo": "chiller", "control": "automatico"});
             });
             describe("si la temperatura de un fermentador es alta", function() {
@@ -162,6 +166,7 @@ describe("con un comando: ", function() {
                 dispos.configurar({"dispositivo": "bomba_chiller", "control": "manual", "accion": "apagar"});
                 dispos.configurar({"dispositivo": "fermentador1", "temp_ideal": 20, "tolerancia":2});
                 dispos.configurar({"dispositivo": "calentador", "control": "automatico"});
+                dispos.configurar({"dispositivo": "bomba_calentador", "control": "automatico"});
                 dispos.configurar({"dispositivo": "chiller", "control": "automatico"});
             });
             describe("si la temperatura de un fermentador es alta", function() {

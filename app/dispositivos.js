@@ -35,6 +35,7 @@ class Dispositivos {
         config.forEach(function(each) {
             each.fecha = fecha;
         });
+        db.collection(collection_name).remove();
         db.collection(collection_name).insert(config, function(err, res) {
             if (err) return console.log(err)
             console.log('saved to database');

@@ -82,6 +82,7 @@ inicializarDispositivos = function(next, mediciones, res){
 
 get_acciones = function(mediciones, dispositivos, res) {
     var acciones = modulo_mediciones.nuevas_mediciones(mediciones, dispositivos);
+    dispositivos.save_on(db, 'dispositivos', function() {}, mediciones, res)
     var respuesta = http_api_to_model.get_api_response({"acciones_a_realizar": acciones});
     res.send(respuesta);
 }

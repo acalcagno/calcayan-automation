@@ -17,6 +17,7 @@ describe("mediciones: ", function() {
                 dispos.configurar({"dispositivo":"calentador", "temp_ideal": 30, "tolerancia":5});
                 dispos.configurar({"dispositivo":"chiller", "temp_ideal": 5, "tolerancia":5});
                 dispos.configurar({"dispositivo":"bomba_chiller", "control": "automatico"});
+                dispos.configurar({"dispositivo":"bomba_calentador", "control": "automatico"});
             });
             describe("y esta frio (se miden 10 grados)", function() {
                 beforeEach(function () {
@@ -44,7 +45,7 @@ describe("mediciones: ", function() {
             describe("y esta en el rango permitido (se miden 28 grados)", function() {
                 describe("si estaba encendido", function() {
                     beforeEach(function () {
-                        dispos.configurar_attr("calentador", "estado", "encendido");
+                        dispos.configurar_attr("calentador", "accion", "encender");
                         acciones = mediciones.nuevas_mediciones([{"sensor":"calentador", "temperatura": 28}], dispos);
                     });
                     it("debería continuar encendido", function() {
@@ -55,7 +56,7 @@ describe("mediciones: ", function() {
 
                 describe("si estaba apagado", function() {
                     beforeEach(function () {
-                        dispos.configurar_attr("calentador", "estado", "apagado");
+                        dispos.configurar_attr("calentador", "accion", "apagar");
                         acciones = mediciones.nuevas_mediciones([{"sensor":"calentador", "temperatura": 28}], dispos);
                     });
                     it("debería continuar apagado", function() {
@@ -66,7 +67,7 @@ describe("mediciones: ", function() {
 
                 describe("si ya estuvo encendido, y luego se apago", function() {
                     beforeEach(function () {
-                        dispos.configurar_attr("calentador", "estado", "encendido");
+                        dispos.configurar_attr("calentador", "accion", "encender");
                         acciones = mediciones.nuevas_mediciones([{"sensor":"calentador", "temperatura": 35}], dispos);
                     });
                     it("debería continuar apagado", function() {
@@ -86,6 +87,7 @@ describe("mediciones: ", function() {
                 dispos.configurar({"dispositivo":"calentador", "temp_ideal": "50", "tolerancia":5});
                 dispos.configurar({"dispositivo":"bomba_chiller", "control": "automatico"});
                 dispos.configurar({"dispositivo":"chiller", "control": "automatico"});
+                dispos.configurar({"dispositivo": "bomba_calentador", "control": "automatico"});
             });
             describe("y esta frio (se miden 42 grados)", function() {
                 beforeEach(function () {
@@ -121,6 +123,7 @@ describe("mediciones: ", function() {
                 dispos.configurar({"dispositivo":"chiller", "temp_ideal": -10, "tolerancia":3});
                 dispos.configurar({"dispositivo":"bomba_chiller", "control": "automatico"});
                 dispos.configurar({"dispositivo":"calentador", "control": "automatico"});
+                dispos.configurar({"dispositivo": "bomba_calentador", "control": "automatico"});
             });
             describe("si está a temperatura deseada (se miden -10)", function() {
                 beforeEach(function () {
@@ -152,7 +155,7 @@ describe("mediciones: ", function() {
             describe("si esta en el rango permitido (se miden -9)", function() {
                 describe("y estaba encendido", function() {
                     beforeEach(function () {
-                        dispos.configurar_attr( "chiller", "estado", "encendido" );
+                        dispos.configurar_attr( "chiller", "accion", "encender" );
                         acciones = mediciones.nuevas_mediciones([{"sensor":"chiller", "temperatura": -9}], dispos);
                     });
 
@@ -169,7 +172,7 @@ describe("mediciones: ", function() {
 
                 describe("y estaba apagado", function() {
                     beforeEach(function () {
-                        dispos.configurar_attr("chiller", "estado", "apagado");
+                        dispos.configurar_attr("chiller", "accion", "apagar");
                         acciones = mediciones.nuevas_mediciones([{"sensor":"chiller", "temperatura": -9}], dispos);
                     });
                     it("deberia seguir apagado", function() {
@@ -180,7 +183,7 @@ describe("mediciones: ", function() {
 
                 describe("si ya estuvo encendido, y luego se apago", function() {
                     beforeEach(function () {
-                        dispos.configurar_attr("chiller", "estado", "encendido"); //estaba encendido
+                        dispos.configurar_attr("chiller", "accion", "encender"); //estaba encendido
                         acciones = mediciones.nuevas_mediciones([{"sensor":"chiller", "temperatura": -10}], dispos);
                     });
                     it("debería continuar apagado", function() {
@@ -214,6 +217,8 @@ describe("mediciones: ", function() {
                 //dispos = [{"dispositivo": "chiller", "temp_ideal": 15, "tolerancia": 5}];
                 dispos.configurar({"dispositivo":"bomba_chiller", "control": "automatico"});
                 dispos.configurar({"dispositivo": "calentador", "control": "automatico"});
+                dispos.configurar({"dispositivo": "bomba_calentador", "control": "automatico"});
+                dispos.configurar_attr("chiller", "accion", "encender");
             });
             describe("si está a temperatura deseada (se miden 15)", function() {
                 beforeEach(function () {
@@ -251,6 +256,7 @@ describe("mediciones: ", function() {
                 dispos.configurar({"dispositivo": "electrovalvula_frio_fermentador_1", "control": "automatico"})
                 dispos.configurar({"dispositivo":"bomba_chiller", "control": "automatico"});
                 dispos.configurar({"dispositivo": "calentador", "control": "automatico"});
+                dispos.configurar({"dispositivo": "bomba_calentador", "control": "automatico"});
                 dispos.configurar({"dispositivo": "chiller", "control": "automatico"});
             });
 
@@ -321,6 +327,7 @@ describe("mediciones: ", function() {
                 dispos = new dispos_module.Dispositivos([{"dispositivo": "fermentador1", "temp_ideal": 7, "tolerancia": 2}]);
                 dispos.configurar({"dispositivo": "electrovalvula_frio_fermentador_1", "control": "automatico"});
                 dispos.configurar({"dispositivo": "bomba_chiller", "control": "automatico"});
+                dispos.configurar({"dispositivo": "bomba_calentador", "control": "automatico"});
                 dispos.configurar({"dispositivo": "calentador", "control": "automatico"});
                 dispos.configurar({"dispositivo": "chiller", "control": "automatico"});
 
@@ -409,6 +416,7 @@ describe("mediciones: ", function() {
             dispos.configurar({"dispositivo": "bomba_chiller", "control": "automatico"});
             dispos.configurar({"dispositivo": "calentador", "control": "automatico"});
             dispos.configurar({"dispositivo": "chiller", "control": "automatico"});
+            dispos.configurar({"dispositivo": "bomba_calentador", "control": "automatico"});
 
             for (var i=desordenador; i < n+desordenador; i++) {
                 medidas.push({"sensor": "fermentador" + i.toString(), "temperatura": 18});

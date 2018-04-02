@@ -12,7 +12,7 @@ exports.nuevas_mediciones = function(mediciones, dispositivos) {
             if (mediciones[i].temperatura >= config_chiller.temp_ideal + config_chiller.tolerancia) {
                 accion_sobre_el_chiller = "encender";
                 accion_de_la_bomba_del_chiller = "encender";
-            } else if (mediciones[i].temperatura > config_chiller.temp_ideal && dispositivos.buscar_config("chiller").estado == "encendido") {
+            } else if (mediciones[i].temperatura > config_chiller.temp_ideal && dispositivos.buscar_config("chiller").accion== "encender") {
                 accion_sobre_el_chiller = "encender";
                 accion_de_la_bomba_del_chiller = "encender";
             }
@@ -20,7 +20,7 @@ exports.nuevas_mediciones = function(mediciones, dispositivos) {
             var config_calentador = dispositivos.buscar_config("calentador");
             if (mediciones[i].temperatura < config_calentador.temp_ideal - config_calentador.tolerancia) {
                 accion_sobre_el_calentador = "encender";
-            } else if (mediciones[i].temperatura < config_calentador.temp_ideal && dispositivos.buscar_config("calentador").estado == "encendido") {
+            } else if (mediciones[i].temperatura < config_calentador.temp_ideal && dispositivos.buscar_config("calentador").accion == "encender") {
                 accion_sobre_el_calentador = "encender";
             }
         } else if(mediciones[i].sensor.substring(0, "fermentador".length) == "fermentador" ) {
@@ -82,12 +82,16 @@ exports.nuevas_mediciones = function(mediciones, dispositivos) {
     }
 
     acciones.push({"dispositivo": "chiller", "accion": accion_sobre_el_chiller});
-    dispositivos.buscar_config("chiller").estado = accion_sobre_el_chiller;
-    acciones.push({"dispositivo": "bomba_chiller","accion": accion_de_la_bomba_del_chiller});
-    acciones.push({"dispositivo": "calentador", "accion": accion_sobre_el_calentador});
-    dispositivos.buscar_config("calentador").estado = accion_sobre_el_calentador;
-    acciones.push({"dispositivo": "bomba_calentador", "accion": accion_de_la_bomba_del_calentador});
+    dispositivos.buscar_config("chiller").accion = accion_sobre_el_chiller;
 
+    acciones.push({"dispositivo": "bomba_chiller","accion": accion_de_la_bomba_del_chiller});
+    dispositivos.buscar_config("bomba_chiller").accion = accion_de_la_bomba_del_chiller;
+
+    acciones.push({"dispositivo": "calentador", "accion": accion_sobre_el_calentador});
+    dispositivos.buscar_config("calentador").accion = accion_sobre_el_calentador;
+
+    acciones.push({"dispositivo": "bomba_calentador", "accion": accion_de_la_bomba_del_calentador});
+    dispositivos.buscar_config("bomba_calentador").accion = accion_de_la_bomba_del_calentador;
 
     return acciones;
 };
