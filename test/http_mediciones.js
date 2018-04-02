@@ -4,7 +4,7 @@ var server = require('../index');
 var should = chai.should();
 
 chai.use(chaiHttp);
-
+/*
 describe('/POST mediciones', function()  {
     it('para un fermentador devuelve 6 acciones', function(done)  {
         var mediciones = {mediciones:[{sensor:'fermentador1', temperatura: '30'}]};
@@ -32,4 +32,4 @@ describe('/POST mediciones', function()  {
                 done();
             });
     });
-});
+});*/
