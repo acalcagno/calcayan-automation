@@ -8,7 +8,7 @@ exports.nuevas_mediciones = function(mediciones, dispositivos) {
     for (var i = 0; i < mediciones.length; i++) {
 
         if (mediciones[i].sensor == "chiller") {
-            var config_chiller = dispositivos.buscar_config("chiller", dispositivos);
+            var config_chiller = dispositivos.buscar_config("chiller");
             if (mediciones[i].temperatura >= config_chiller.temp_ideal + config_chiller.tolerancia) {
                 accion_sobre_el_chiller = "encender";
                 accion_de_la_bomba_del_chiller = "encender";
@@ -26,8 +26,8 @@ exports.nuevas_mediciones = function(mediciones, dispositivos) {
         } else if(mediciones[i].sensor.substring(0, "fermentador".length) == "fermentador" ) {
 
             var nro_fermentador = mediciones[i].sensor.substr(mediciones[i].sensor.length-1, 1);
-            var config_fermentador = dispositivos.buscar_config(mediciones[i].sensor, dispositivos);
-            var config_electrovalvula_frio = dispositivos.buscar_config("electrovalvula_frio_fermentador_" + nro_fermentador.toString(), dispositivos);
+            var config_fermentador = dispositivos.buscar_config(mediciones[i].sensor);
+            var config_electrovalvula_frio = dispositivos.buscar_config("electrovalvula_frio_fermentador_" + nro_fermentador.toString());
 
             if (mediciones[i].temperatura >= config_fermentador.temp_ideal + config_fermentador.tolerancia) {
                 acciones.push({
@@ -60,7 +60,7 @@ exports.nuevas_mediciones = function(mediciones, dispositivos) {
     for (var i = 0; i < mediciones.length; i++) {
         if(mediciones[i].sensor.substring(0, "fermentador".length) == "fermentador" ) {
             var nro_fermentador = mediciones[i].sensor.substr(mediciones[i].sensor.length - 1, 1);
-            var config_ev = dispositivos.buscar_config("electrovalvula_frio_fermentador_" + nro_fermentador.toString(), dispositivos);
+            var config_ev = dispositivos.buscar_config("electrovalvula_frio_fermentador_" + nro_fermentador.toString());
 
             if(config_ev.control == "manual") {
                 var acciones_sobre_ev = acciones.filter(function(each) {
@@ -71,12 +71,12 @@ exports.nuevas_mediciones = function(mediciones, dispositivos) {
         }
     }
 
-    var config_bomba_chiller =  dispositivos.buscar_config("bomba_chiller", dispositivos);
+    var config_bomba_chiller =  dispositivos.buscar_config("bomba_chiller");
     if (config_bomba_chiller.control == "manual") {
         accion_de_la_bomba_del_chiller = config_bomba_chiller.accion;
     }
 
-    var config_calentador = dispositivos.buscar_config("calentador", dispositivos);
+    var config_calentador = dispositivos.buscar_config("calentador");
     if (config_calentador.control == "manual") {
         accion_sobre_el_calentador = config_calentador.accion;
     }
