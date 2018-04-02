@@ -23,11 +23,29 @@ var db;
 var MongoClient = require('mongodb').MongoClient;
 
 index.get('/panel_de_control', function (req, res) {
-    db.collection('dispositivos').find().toArray(function(err, result)  {
+
+    db.collection('dispositivos').aggregate(
+        [
+            { $sort: { dispositivo: 1, fecha: 1 } },
+            {
+                $group:
+                    {
+                        _id: "$dispositivo",
+                        ultima_fecha: { $last: "$fecha" }
+                    }
+            }
+        ]
+    ).toArray(function(err, result)  {
         if (err) {
             return console.log(err)
         };
-        res.render('panel_de_control.ejs', { dispositivos: result} );
+        var fh = result[0].ultima_fecha;
+        db.collection('dispositivos').find({fecha: fh}).toArray(function(err2, result2) {
+            if (err2) {
+                return console.log(err2)
+            };
+            res.render('panel_de_control.ejs', { dispositivos: result2} );
+        })
     });
 });
 
@@ -52,9 +70,10 @@ inicializarDispositivos = function(next, mediciones, res){
     dispositivos.configurar({"dispositivo": "electrovalvula_calor_fermentador_1", "control": "automatico", "accion": "cerrar"});
     dispositivos.configurar({"dispositivo": "electrovalvula_calor_fermentador_2", "control": "automatico", "accion": "cerrar"});
     dispositivos.configurar({"dispositivo": "electrovalvula_calor_fermentador_3", "control": "automatico", "accion": "cerrar"});
-    dispositivos.configurar({"dispositivo": "bomba_chiller", "control": "automatico"});
-    dispositivos.configurar({"dispositivo": "calentador", "control": "automatico"});
-    dispositivos.configurar({"dispositivo": "chiller", "control": "automatico"});
+    dispositivos.configurar({"dispositivo": "bomba_chiller", "control": "automatico", "accion": "apagar"});
+    dispositivos.configurar({"dispositivo": "bomba_calentador", "control": "automatico", "accion": "apagar"});
+    dispositivos.configurar({"dispositivo": "calentador", "control": "automatico", "accion": "apagar", "temp_ideal": 30, "tolerancia": 5});
+    dispositivos.configurar({"dispositivo": "chiller", "control": "automatico", "accion": "apagar", "temp_ideal": 5, "tolerancia": 2});
     dispositivos.configurar({"dispositivo": "fermentador1", "temp_ideal": 20, "tolerancia":2});
     dispositivos.configurar({"dispositivo": "fermentador2", "temp_ideal": 20, "tolerancia":2});
     dispositivos.configurar({"dispositivo": "fermentador3", "temp_ideal": 20, "tolerancia":2});

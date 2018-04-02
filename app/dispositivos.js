@@ -31,12 +31,15 @@ class Dispositivos {
     save_on(db, collection_name, next, mediciones, response) {
         //config.forEach(function(element) {
         var _this = this;
-            db.collection(collection_name).insert(config, function(err, res) {
-                if (err) return console.log(err)
-                console.log('saved to database');
-                next(mediciones, _this, response);
-            });
-        //});
+        var fecha = new Date();
+        config.forEach(function(each) {
+            each.fecha = fecha;
+        });
+        db.collection(collection_name).insert(config, function(err, res) {
+            if (err) return console.log(err)
+            console.log('saved to database');
+            next(mediciones, _this, response);
+        });
     }
 }
 

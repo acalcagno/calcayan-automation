@@ -27,103 +27,56 @@
 
 <div class="container">
     <div class="card-deck mb-3 text-center ">
-        <div class="card border-success mb-3">
-            <div class="card-header">
-                <h4 class="my-0 font-weight-normal">Chiller</h4>
-            </div>
-            <div class="card-body">
-                <h1 class="card-title pricing-card-title">Encendido <small class="text-muted"><br>manual</small></h1>
-                <ul class="list-unstyled mt-3 mb-4">
-                    <li>Ha estado encendido por 00:00 horas</li>
-                    <li>Esta configurado en 5ºc. &plusmn; 2ºc</li>
-                    <li>Su temperatura actual es de 6ºc.</li>
-                </ul>
-                <div>
-                    <button type="button" class="btn btn-primary">Encender</button>
-                    <button type="button" class="btn btn-secondary">Apagar</button>
-                    <br>
-                    <br>
+        <%
+            var cant_dispositivos_renderizados = 0;
+            for(var i=0; i < dispositivos.length; i++) {
+            var dispo = dispositivos[i];
+            var manual = dispositivos[i].control == "manual";
+
+            if(["chiller",
+                        "bomba_chiller",
+                        "calentador",
+                        "bomba_calentador",
+                        "electrovalvula_frio_fermentador_1",
+                        "electrovalvula_frio_fermentador_2",
+                        "electrovalvula_frio_fermentador_3"
+                    ].includes(dispo.dispositivo)) {
+                cant_dispositivos_renderizados++;
+                var estado = dispo.accion.replace("apagar", "Apagado").replace("encender", "Encendido");%>
+                <div class="card <% if(manual) {%> <%='border-success mb-3'%><%} else {%><%='mb-4 box-shadow'%><%}%>">
+                    <div class="card-header">
+                        <h4 class="my-0 font-weight-normal"><%=dispo.dispositivo.replace("electrovalvula","ev")%></h4>
+                    </div>
+                    <div class="card-body">
+                        <h1 class="card-title pricing-card-title"><%=estado %> <small class="text-muted"><br><%=dispo.control%></small></h1>
+                        <ul class="list-unstyled mt-3 mb-4">
+                            <li>Ha estado <%=estado.toLowerCase()%> por xx:xx horas</li>
+                            <%if (dispo.temp_ideal != undefined) { %>
+                            <li>Esta configurado en <%=dispo.temp_ideal%>ºc &plusmn; <%=dispo.tolerancia%>ºc</li>
+                            <li>Su temperatura actual es de xºc.</li>
+                            <% }%>
+                        </ul>
+                        <%if (manual) {%>
+                        <div>
+                            <button type="button" class="btn btn-primary" <% if(estado == "Encendido") {%><%='disabled'%><%}%>>Encender</button>
+                            <button type="button" class="btn btn-secondary"<% if(estado == "Apagado") {%><%='disabled'%><%}%>>Apagar</button>
+                            <br>
+                            <br>
+                        </div>
+                        <button type="button" class="btn btn-lg btn-block btn-outline-primary">Ceder Control Manual</button>
+                        <% } else { %>
+                            <button type="button" class="btn btn-lg btn-block btn-primary">Controlar Manualmente</button>
+                        <% } %>
+                    </div>
                 </div>
-                <button type="button" class="btn btn-lg btn-block btn-outline-primary">Ceder Control Manual</button>
-            </div>
-        </div>
-        <div class="card mb-4 box-shadow">
-            <div class="card-header">
-                <h4 class="my-0 font-weight-normal">Bomba del chiller</h4>
-            </div>
-            <div class="card-body">
-                <h1 class="card-title pricing-card-title">Encendida<small class="text-muted"><br>automatico</small></h1>
-                <ul class="list-unstyled mt-3 mb-4">
-                    <li>Ha estado encendida por 00:00 horas</li>
-                </ul>
-                <button type="button" class="btn btn-lg btn-block btn-primary">Controlar Manualmente</button>
-            </div>
-        </div>
-        <div class="card mb-4 box-shadow">
-            <div class="card-header">
-                <h4 class="my-0 font-weight-normal">Calentador</h4>
-            </div>
-            <div class="card-body">
-                <h1 class="card-title pricing-card-title">Apagado<small class="text-muted"><br>automatico</small></h1>
-                <ul class="list-unstyled mt-3 mb-4">
-                    <li>Ha estado apagado por 00:00 horas</li>
-                    <li>Esta configurado en 30ºc. &plusmn; 5ºc</li>
-                    <li>Su temperatura actual es de 31.5ºc.</li>
-
-                </ul>
-                <button type="button" class="btn btn-lg btn-block btn-primary">Controlar Manualmente</button>
-            </div>
-        </div>
-    </div>
-
-    <div class="card-deck mb-3 text-center">
-        <div class="card border-success mb-3">
-            <div class="card-header">
-                <h4 class="my-0 font-weight-normal">Bomba Calentador</h4>
-            </div>
-            <div class="card-body">
-                <h1 class="card-title pricing-card-title">Encendida <small class="text-muted"><br>manual</small></h1>
-                <ul class="list-unstyled mt-3 mb-4">
-                    <li>Ha estado encendido por 00:00 horas</li>
-                </ul>
-                <div>
-                    <button type="button" class="btn btn-primary">Encender</button>
-                    <button type="button" class="btn btn-secondary">Apagar</button>
-                    <br>
-                    <br>
-                </div>
-                <button type="button" class="btn btn-lg btn-block btn-outline-primary">Ceder Control Manual</button>
-            </div>
-        </div>
-        <div class="card mb-4 box-shadow">
-            <div class="card-header">
-                <h4 class="my-0 font-weight-normal">EV Fermentador 1</h4>
-            </div>
-            <div class="card-body">
-                <h1 class="card-title pricing-card-title">abierta<small class="text-muted"><br>automatico</small></h1>
-                <ul class="list-unstyled mt-3 mb-4">
-                    <li>Ha estado abierta por 00:00 horas</li>
-                    <li>Esta configurado en 20ºc. &plusmn; 2ºc</li>
-                    <li>Su temperatura actual es de 20.5ºc.</li>
-                </ul>
-                <button type="button" class="btn btn-lg btn-block btn-primary">Controlar Manualmente</button>
-            </div>
-        </div>
-        <div class="card mb-4 box-shadow">
-            <div class="card-header">
-                <h4 class="my-0 font-weight-normal">EV Fermentador 2</h4>
-            </div>
-            <div class="card-body">
-                <h1 class="card-title pricing-card-title">abierta<small class="text-muted"><br>automatico</small></h1>
-                <ul class="list-unstyled mt-3 mb-4">
-                    <li>Ha estado abierta por 00:00 horas</li>
-                    <li>Esta configurado en 20ºc. &plusmn; 2ºc</li>
-                    <li>Su temperatura actual es de 20.5ºc.</li>
-
-                </ul>
-                <button type="button" class="btn btn-lg btn-block btn-primary">Controlar Manualmente</button>
-            </div>
-        </div>
+                <%
+                } if(cant_dispositivos_renderizados == 3) {
+                    cant_dispositivos_renderizados = 0;%>
+                    </div>
+                    <div class="card-deck mb-3 text-center">
+                <% }
+                }
+            %>
     </div>
 
 
