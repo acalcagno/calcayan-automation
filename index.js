@@ -9,6 +9,8 @@ var dispos_module = require("./app/dispositivos");
 var http_requests_db_log = require("./app/http_requests_db_log");
 var http_api_to_model = require("./app/http_api_to_model");
 
+var dispositivos;
+
 index.use(bodyParser.json());
 index.use(bodyParser.urlencoded({extended: true}));
 index.use(bodyParser.text());
@@ -21,7 +23,12 @@ var db;
 var MongoClient = require('mongodb').MongoClient;
 
 index.get('/panel_de_control', function (req, res) {
-    res.render('panel_de_control.ejs', { config: []} );
+    db.collection('dispositivos').find().toArray(function(err, result)  {
+        if (err) {
+            return console.log(err)
+        };
+        res.render('panel_de_control.ejs', { dispositivos: result} );
+    });
 });
 
 index.get('/requests/', function(req, res) {
@@ -33,30 +40,49 @@ index.get('/requests/', function(req, res) {
     });
 });
 
+/*index.get('/estado_actual/', function(req, res, next) {
+    db.collection("dispositivos").find().to
+})*/
+
+
+inicializarDispositivos = function(next, mediciones, res){
+    dispositivos = new dispos_module.Dispositivos([{"dispositivo": "electrovalvula_frio_fermentador_1", "control": "automatico", "accion": "cerrar"}]);
+    dispositivos.configurar({"dispositivo": "electrovalvula_frio_fermentador_2", "control": "automatico", "accion": "cerrar"});
+    dispositivos.configurar({"dispositivo": "electrovalvula_frio_fermentador_3", "control": "automatico", "accion": "cerrar"});
+    dispositivos.configurar({"dispositivo": "electrovalvula_calor_fermentador_1", "control": "automatico", "accion": "cerrar"});
+    dispositivos.configurar({"dispositivo": "electrovalvula_calor_fermentador_2", "control": "automatico", "accion": "cerrar"});
+    dispositivos.configurar({"dispositivo": "electrovalvula_calor_fermentador_3", "control": "automatico", "accion": "cerrar"});
+    dispositivos.configurar({"dispositivo": "bomba_chiller", "control": "automatico"});
+    dispositivos.configurar({"dispositivo": "calentador", "control": "automatico"});
+    dispositivos.configurar({"dispositivo": "chiller", "control": "automatico"});
+    dispositivos.configurar({"dispositivo": "fermentador1", "temp_ideal": 20, "tolerancia":2});
+    dispositivos.configurar({"dispositivo": "fermentador2", "temp_ideal": 20, "tolerancia":2});
+    dispositivos.configurar({"dispositivo": "fermentador3", "temp_ideal": 20, "tolerancia":2});
+    dispositivos.save_on(db, 'dispositivos', next, mediciones, res);
+}
+
+get_acciones = function(mediciones, dispositivos, res) {
+    var acciones = modulo_mediciones.nuevas_mediciones(mediciones, dispositivos);
+    var respuesta = http_api_to_model.get_api_response({"acciones_a_realizar": acciones});
+    res.send(respuesta);
+}
 
 index.post('/mediciones/', function (req, res, next) {
 
     var req_body = req.body;
     var mediciones = req_body.mediciones;
-    var config = new dispos_module.Dispositivos(
-    [{"dispositivo":"calentador", "temp_ideal": 30, "tolerancia":5},
-        {"dispositivo":"chiller", "temp_ideal": 30, "tolerancia":5},
-        {"dispositivo":"bomba_chiller", "control": "automatico"},
-        {"dispositivo":"fermentador1", "temp_ideal": 19, "tolerancia":2},
-        {"dispositivo":"fermentador2", "temp_ideal": 19, "tolerancia":2},
-        {"dispositivo":"fermentador3", "temp_ideal": 19, "tolerancia":2},
-        {"dispositivo": "electrovalvula_frio_fermentador_1", "control": "automatico"},
-        {"dispositivo": "electrovalvula_frio_fermentador_2", "control": "automatico"},
-        {"dispositivo": "electrovalvula_frio_fermentador_3", "control": "automatico"},
-        {"dispositivo": "electrovalvula_calor_fermentador_1", "control": "automatico"},
-        {"dispositivo": "electrovalvula_calor_fermentador_2", "control": "automatico"},
-        {"dispositivo": "electrovalvula_calor_fermentador_3", "control": "automatico"}
-    ]);
 
-    var acciones = modulo_mediciones.nuevas_mediciones(mediciones, config);
-    var respuesta = http_api_to_model.get_api_response({"acciones_a_realizar": acciones});
-    res.send(respuesta);
-
+    db.collection('dispositivos').find().toArray(function(err, result)  {
+        if (err) {
+            return console.log(err)
+        };
+        dispositivos = dispositivos = new dispos_module.Dispositivos(result);
+        if(result.length == 0) {
+            inicializarDispositivos(get_acciones, mediciones, res);
+        } else {
+            get_acciones(mediciones, dispositivos, res);
+        }
+    });
 });
 
 function log(req, res, next) {

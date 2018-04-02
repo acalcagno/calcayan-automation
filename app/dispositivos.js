@@ -27,6 +27,17 @@ class Dispositivos {
         });
         return result[0];
     }
+
+    save_on(db, collection_name, next, mediciones, response) {
+        //config.forEach(function(element) {
+        var _this = this;
+            db.collection(collection_name).insert(config, function(err, res) {
+                if (err) return console.log(err)
+                console.log('saved to database');
+                next(mediciones, _this, response);
+            });
+        //});
+    }
 }
 
 exports.Dispositivos = Dispositivos;
