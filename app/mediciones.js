@@ -9,6 +9,7 @@ exports.nuevas_mediciones = function(mediciones, dispositivos) {
 
         if (mediciones[i].sensor == "chiller") {
             var config_chiller = dispositivos.buscar_config("chiller");
+            config_chiller.temperatura = mediciones[i].temperatura;
             if (mediciones[i].temperatura >= config_chiller.temp_ideal + config_chiller.tolerancia) {
                 accion_sobre_el_chiller = "encender";
                 accion_de_la_bomba_del_chiller = "encender";
@@ -18,6 +19,7 @@ exports.nuevas_mediciones = function(mediciones, dispositivos) {
             }
         } else if(mediciones[i].sensor == "calentador") {
             var config_calentador = dispositivos.buscar_config("calentador");
+            config_calentador.temperatura = mediciones[i].temperatura;
             if (mediciones[i].temperatura < config_calentador.temp_ideal - config_calentador.tolerancia) {
                 accion_sobre_el_calentador = "encender";
             } else if (mediciones[i].temperatura < config_calentador.temp_ideal && dispositivos.buscar_config("calentador").accion == "encender") {
