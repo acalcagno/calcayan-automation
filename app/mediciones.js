@@ -28,7 +28,7 @@ exports.nuevas_mediciones = function(mediciones, dispositivos) {
             var nro_fermentador = mediciones[i].sensor.substr(mediciones[i].sensor.length-1, 1);
             var config_fermentador = dispositivos.buscar_config(mediciones[i].sensor);
             var config_electrovalvula_frio = dispositivos.buscar_config("electrovalvula_frio_fermentador_" + nro_fermentador.toString());
-
+            dispositivos.buscar_config(mediciones[i].sensor).temperatura = mediciones[i].temperatura;
             if (mediciones[i].temperatura >= config_fermentador.temp_ideal + config_fermentador.tolerancia) {
                 acciones.push({
                     "dispositivo": "electrovalvula_frio_fermentador_" + nro_fermentador.toString(),

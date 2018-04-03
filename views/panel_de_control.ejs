@@ -56,9 +56,19 @@
                         <ul class="list-unstyled mt-3 mb-4">
                             <li>Ha estado <%=estado.toLowerCase()%> por xx:xx horas</li>
                             <%if (dispo.temp_ideal != undefined) { %>
-                            <li>Esta configurado en <%=dispo.temp_ideal%>ºc &plusmn; <%=dispo.tolerancia%>ºc</li>
-                            <li>Su temperatura actual es de xºc.</li>
+                                <li>Esta configurado en <%=dispo.temp_ideal%>ºc &plusmn; <%=dispo.tolerancia%>ºc</li>
+                                <li>Su temperatura actual es de xºc.</li>
                             <% }%>
+                            <%
+                            var dd;
+                            if (dispo.dispositivo.substring(0,14) == "electrovalvula") { %>
+                                <li>La ultima medicion del sensor es:
+                                    <% dd = dispositivos.filter(function(each) {
+                                        return each.dispositivo ==  "fermentador" + dispo.dispositivo.substring(dispo.dispositivo.length -1 , dispo.dispositivo.length );
+                                        })[0].temperatura %>
+                                <%=dd%>
+                                </li>
+                            <% } %>
                         </ul>
                         <%if (manual) {
                             if (dispo.dispositivo.substring(0,14) != "electrovalvula") {%>
