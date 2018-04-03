@@ -80,6 +80,38 @@ inicializarDispositivos = function(next, mediciones, res){
     dispositivos.save_on(db, 'dispositivos', next, mediciones, res);
 }
 
+index.post('/control/', function (req, res, next) {
+    var nombre_dispositivo = req.body.dispositivo;
+    var dispositivo;
+
+    db.collection('dispositivos').find().toArray(function(err, result) {
+        if (err) {
+            return console.log(err)
+        }
+        var dispositivos = new dispos_module.Dispositivos(result);
+        var dispositivo = dispositivos.buscar_config(nombre_dispositivo);
+
+        if (req.body.accion == "get_manual") {
+            dispositivo.control = "manual";
+        } else if (req.body.accion == "get_auto") {
+            dispositivo.control = "automatico";
+        } else if (req.body.accion == "encender") {
+            dispositivo.accion = req.body.accion;
+        } else if (req.body.accion == "apagar") {
+            dispositivo.accion = req.body.accion;
+        } else if (req.body.accion == "abrir") {
+            dispositivo.accion = req.body.accion;
+        } else if (req.body.accion == "cerrar") {
+            dispositivo.accion = req.body.accion;
+        }
+
+        dispositivos.save_on(db,'dispositivos', function() {
+            res.redirect("/panel_de_control");
+        });
+
+    });
+});
+
 get_acciones = function(mediciones, dispositivos, res) {
     var acciones = modulo_mediciones.nuevas_mediciones(mediciones, dispositivos);
     dispositivos.save_on(db, 'dispositivos', function() {}, mediciones, res)
@@ -96,7 +128,7 @@ index.post('/mediciones/', function (req, res, next) {
         if (err) {
             return console.log(err)
         };
-        dispositivos = dispositivos = new dispos_module.Dispositivos(result);
+        dispositivos = new dispos_module.Dispositivos(result);
         if(result.length == 0) {
             inicializarDispositivos(get_acciones, mediciones, res);
         } else {

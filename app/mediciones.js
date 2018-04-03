@@ -81,6 +81,11 @@ exports.nuevas_mediciones = function(mediciones, dispositivos) {
         accion_sobre_el_calentador = config_calentador.accion;
     }
 
+    var config_chiller = dispositivos.buscar_config("chiller");
+    if (config_chiller.control == "manual") {
+        accion_sobre_el_chiller = config_chiller.accion;
+    }
+
     acciones.push({"dispositivo": "chiller", "accion": accion_sobre_el_chiller});
     dispositivos.buscar_config("chiller").accion = accion_sobre_el_chiller;
 
