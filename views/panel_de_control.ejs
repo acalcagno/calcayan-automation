@@ -60,13 +60,14 @@
                                 <li>Su temperatura actual es de xºc.</li>
                             <% }%>
                             <%
-                            var dd;
+                            var medicion_sensor;
+                            var fermentador_correspondiente = "fermentador" + dispo.dispositivo.substring(dispo.dispositivo.length -1 , dispo.dispositivo.length );
                             if (dispo.dispositivo.substring(0,14) == "electrovalvula") { %>
-                                <li>La ultima medicion del sensor es:
-                                    <% dd = dispositivos.filter(function(each) {
-                                        return each.dispositivo ==  "fermentador" + dispo.dispositivo.substring(dispo.dispositivo.length -1 , dispo.dispositivo.length );
+                                <li>La ultima medicion del sensor <%=fermentador_correspondiente%> es:
+                                    <% medicion_sensor = dispositivos.filter(function(each) {
+                                        return each.dispositivo == fermentador_correspondiente;
                                         })[0].temperatura %>
-                                <%=dd%>
+                                <%=medicion_sensor%>ºc
                                 </li>
                             <% } %>
                         </ul>
