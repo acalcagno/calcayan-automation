@@ -43,7 +43,7 @@
                         "electrovalvula_frio_fermentador_3"
                     ].includes(dispo.dispositivo)) {
                 cant_dispositivos_renderizados++;
-                var estado = dispo.accion.replace("apagar", "Apagado").replace("encender", "Encendido");%>
+                var estado = dispo.accion.replace("apagar", "Apagado").replace("encender", "Encendido").replace("abrir", "Abierta").replace("cerrar", "Cerrada");%>
 
                 <div class="card <% if(manual) {%> <%='border-success mb-3'%><%} else {%><%='mb-4 box-shadow'%><%}%>">
                     <form action="control" method="post">
@@ -60,13 +60,22 @@
                             <li>Su temperatura actual es de xºc.</li>
                             <% }%>
                         </ul>
-                        <%if (manual) {%>
-                        <div>
-                            <button type="submit" name="accion" value="encender" class="btn btn-primary" <% if(estado == "Encendido") {%><%='disabled'%><%}%>>Encender</button>
-                            <button type="submit" name="accion" value="apagar" class="btn btn-secondary"<% if(estado == "Apagado") {%><%='disabled'%><%}%>>Apagar</button>
-                            <br>
-                            <br>
-                        </div>
+                        <%if (manual) {
+                            if (dispo.dispositivo.substring(0,14) != "electrovalvula") {%>
+                                <div>
+                                    <button type="submit" name="accion" value="encender" class="btn btn-primary" <% if(estado == "Encendido") {%><%='disabled'%><%}%>>Encender</button>
+                                    <button type="submit" name="accion" value="apagar" class="btn btn-secondary"<% if(estado == "Apagado") {%><%='disabled'%><%}%>>Apagar</button>
+                                    <br>
+                                    <br>
+                                </div>
+                            <% } else { %>
+                                <div>
+                                    <button type="submit" name="accion" value="abrir" class="btn btn-primary" <% if(estado == "Abierta") {%><%='disabled'%><%}%>>Abrir</button>
+                                    <button type="submit" name="accion" value="cerrar" class="btn btn-secondary"<% if(estado == "Cerrada") {%><%='disabled'%><%}%>>Cerrar</button>
+                                    <br>
+                                    <br>
+                                </div>
+                            <% } %>
                         <button type="submit" name="accion" value="get_auto" class="btn btn-lg btn-block btn-outline-primary">Ceder Control Manual</button>
                         <% } else { %>
                             <button type="submit" name="accion" value="get_manual" class="btn btn-lg btn-block btn-primary">Controlar Manualmente</button>
