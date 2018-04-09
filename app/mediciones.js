@@ -6,7 +6,6 @@ exports.nuevas_mediciones = function(mediciones, dispositivos) {
     var accion_sobre_el_calentador = "apagar";
 
     for (var i = 0; i < mediciones.length; i++) {
-
         if (mediciones[i].sensor == "chiller") {
             var config_chiller = dispositivos.buscar_config("chiller");
             config_chiller.temperatura = mediciones[i].temperatura;
