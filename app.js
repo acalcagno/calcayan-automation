@@ -58,10 +58,6 @@ index.get('/requests/', function(req, res) {
     });
 });
 
-/*index.get('/estado_actual/', function(req, res, next) {
-    db.collection("dispositivos").find().to
-})*/
-
 
 inicializarDispositivos = function(next, mediciones, res){
     dispositivos = new dispos_module.Dispositivos([{"dispositivo": "electrovalvula_frio_fermentador_1", "control": "automatico", "accion": "cerrar"}]);
