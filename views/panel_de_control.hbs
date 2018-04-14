@@ -1,0 +1,60 @@
+<div class="pricing-header px-3 py-3 pt-md-5 pb-md-4 mx-auto text-center">
+    <h1 class="display-4">Control del sistema</h1>
+    <p class="lead">Tome el control manual del sistema de fermentacion y madurado</p>
+</div>
+
+<div class="container">
+    <div class="card-deck mb-3 text-center ">
+
+        {{# each dispositivos }}
+            {{#ifIn dispositivo ../render_tarjetas }}
+                <div class="card {{#ifManual this }} 'border-success mb-3' {{ else }} 'mb-4 box-shadow' {{/ifManual}}">
+                    <form action="control" method="post">
+                        <input type="hidden" name="dispositivo" value="{{ dispositivo }}"/>
+                        <div class="card-header">
+                            <h4 class="my-0 font-weight-normal">{{ dispositivo }}</h4>
+                        </div>
+                        <div class="card-body">
+                        <h1 class="card-title pricing-card-title">{{ accion }} <small class="text-muted"><br>{{ control }}</small></h1>
+                            <ul class="list-unstyled mt-3 mb-4">
+                                <li>Ha estado {{ accion }} por xx:xx horas</li>
+                                {{#if temp_ideal }}
+                                <li>Esta configurado en {{ temp_ideal }} ºc &plusmn; {{ tolerancia}}ºc</li>
+                                    {{#ifIn dispositivo ../render_detalle_termico }}
+                                        <li>Su temperatura actual es de {{ temperatura }}ºc.</li>
+                                    {{/ifIn }}
+                                {{/if }}
+                                {{#ifEsElectrovalvula dispositivo }}
+                                    <li>La ultima medicion del sensor {{fermentadorCorrespondiente dispositivo }} es: {{fermentador dispositivo ../dispositivos}}ºc</li>
+                                {{/ifEsElectrovalvula}}
+                            </ul>
+                    {{#ifManual this }}
+                        {{#ifEsElectrovalvula dispositivo }}
+                            <div>
+                                <button type="submit" name="accion" value="abrir" class="btn btn-primary" {{#ifAbierto this }}disabled{{/ifAbierto}}>Abrir</button>
+                                <button type="submit" name="accion" value="cerrar" class="btn btn-secondary"{{#ifCerrado this }}disabled{{/ifCerrado}}>Cerrar</button>
+                                <br>
+                                <br>
+                            </div>
+                        {{ else }}
+                            <div>
+                                <button type="submit" name="accion" value="encender" class="btn btn-primary" {{#ifEncendido this }}disabled{{/ifEncendido}}>Encender</button>
+                                <button type="submit" name="accion" value="apagar" class="btn btn-secondary"{{#ifApagado this }}disabled{{/ifApagado}}>Apagar</button>
+                                <br>
+                                <br>
+                            </div>
+                        {{/ifEsElectrovalvula}}
+                        <button type="submit" name="accion" value="get_auto" class="btn btn-lg btn-block btn-outline-primary">Ceder Control Manual</button>
+                    {{ else }}
+                        <button type="submit" name="accion" value="get_manual" class="btn btn-lg btn-block btn-primary">Controlar Manualmente</button>
+                    {{/ifManual }}
+                    </div>
+                    </form>
+                </div>
+                {{#ifThird @index}}
+                    </div>
+                    <div class="card-deck mb-3 text-center">
+                {{/ifThird}}
+            {{/ifIn}}
+        {{/each}}
+    </div>

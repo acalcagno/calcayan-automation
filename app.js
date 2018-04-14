@@ -1,8 +1,10 @@
 const PORT = process.env.PORT || 5000
 
 var express = require('express');
-var index = express();
+var app = express();
 var bodyParser = require('body-parser');
+
+var expressHbs = require('express-handlebars');
 
 var modulo_mediciones = require("./app/mediciones");
 var dispos_module = require("./app/dispositivos");
@@ -11,18 +13,20 @@ var http_api_to_model = require("./app/http_api_to_model");
 
 var dispositivos;
 
-index.use(bodyParser.json());
-index.use(bodyParser.urlencoded({extended: true}));
-index.use(bodyParser.text());
-index.use(bodyParser.json({ type: 'indexlication/json'}));
-//index.use(log);
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({extended: true}));
+app.use(bodyParser.text());
+app.use(bodyParser.json({ type: 'indexlication/json'}));
+app.use(log);
 
-index.set('view engine', 'ejs');
+//index.set('view engine', 'ejs');
+app.engine('.hbs', expressHbs({defaultLayout: 'layout', extname: '.hbs', helpers: require('./config/handlebars-helpers')}));
+app.set('view engine', '.hbs');
 
 var db;
 var MongoClient = require('mongodb').MongoClient;
 
-index.get('/panel_de_control', function (req, res) {
+app.get('/panel_de_control', function (req, res) {
 
     db.collection('dispositivos').aggregate(
         [
@@ -44,17 +48,19 @@ index.get('/panel_de_control', function (req, res) {
             if (err2) {
                 return console.log(err2)
             };
-            res.render('panel_de_control.ejs', { dispositivos: result2} );
+            res.render('panel_de_control.hbs', { dispositivos: result2,
+                render_tarjetas:  ["chiller", "bomba_chiller", "calentador", "bomba_calentador", "electrovalvula_frio_fermentador_1", "electrovalvula_frio_fermentador_2","electrovalvula_frio_fermentador_3"],
+                render_detalle_termico: ["chiller", "calentador"] });
         })
     });
 });
 
-index.get('/requests/', function(req, res) {
+app.get('/requests/', function(req, res) {
     db.collection('https').find().toArray(function(err, result)  {
         if (err) {
             return console.log(err)
         };
-        res.render('requests.ejs', {https: result});
+        res.render('requests.hbs', {https: result});
     });
 });
 
@@ -76,7 +82,7 @@ inicializarDispositivos = function(next, mediciones, res){
     dispositivos.save_on(db, 'dispositivos', next, mediciones, res);
 }
 
-index.post('/control/', function (req, res, next) {
+app.post('/control/', function (req, res, next) {
     var nombre_dispositivo = req.body.dispositivo;
     var dispositivo;
 
@@ -115,7 +121,7 @@ get_acciones = function(mediciones, dispositivos, res) {
     res.send(respuesta);
 }
 
-index.post('/mediciones/', function (req, res, next) {
+app.post('/mediciones/', function (req, res, next) {
 
     var req_body = req.body;
     var mediciones = req_body.mediciones;
@@ -203,18 +209,18 @@ getLoggerForStatusCode = function(statusCode) {
     return console.log.bind(console)
 }
 
-
-
 MongoClient.connect('mongodb://heroku_jtg8f10j:m8eofmkrgrvh3uqop33frikkig@ds129028.mlab.com:29028/heroku_jtg8f10j', function(err, client) {
     if (err) {
         return console.log(err);
     }
 
     db = client.db('heroku_jtg8f10j'); // whatever your database name is*/
-    index.listen(PORT, function () {
-        console.log(`Example index listening on port ${ PORT }`);
+    app.listen(PORT, function () {
+        console.log(`Example app listening on port ${ PORT }`);
     });
 });
 
 
-module.exports = index; // for testing
+
+
+module.exports = app; // for testing
