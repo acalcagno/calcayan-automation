@@ -1,10 +1,18 @@
 const PORT = process.env.PORT || 5000
-
+var path = require('path');
 var express = require('express');
 var app = express();
 var bodyParser = require('body-parser');
 
-var expressHbs = require('express-handlebars');
+//var expressHbs = require('express-handlebars');
+
+var express = require('express')
+    , hbs     = require('express-hbs')
+    , app
+;
+var hbs_helpers = require('./config/handlebars-helpers');
+hbs_helpers.registerCustomHelpers(hbs);
+
 
 var modulo_mediciones = require("./app/mediciones");
 var dispos_module = require("./app/dispositivos");
@@ -20,11 +28,18 @@ app.use(bodyParser.json({ type: 'indexlication/json'}));
 app.use(log);
 
 //index.set('view engine', 'ejs');
-app.engine('.hbs', expressHbs({defaultLayout: 'layout', extname: '.hbs', helpers: require('./config/handlebars-helpers')}));
+app.engine('.hbs', hbs.express4({defaultLayout: 'app/templates/layouts/layout', extname: '.hbs', helpers: require('./config/handlebars-helpers')}));
 app.set('view engine', '.hbs');
+app.set('views', path.join(__dirname, 'app/templates'));
+
+
 
 var db;
 var MongoClient = require('mongodb').MongoClient;
+
+app.get('/scripts/*',function(req, res) {
+    res.sendFile(path.join(__dirname, '/public', req.originalUrl));
+});
 
 app.get('/panel_de_control', function (req, res) {
 

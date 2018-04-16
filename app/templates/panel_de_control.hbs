@@ -1,3 +1,8 @@
+
+{{#contentFor 'title'}}
+    <title>Panel de Control - calcayan automation</title>
+{{/contentFor}}
+
 <div class="pricing-header px-3 py-3 pt-md-5 pb-md-4 mx-auto text-center">
     <h1 class="display-4">Control del sistema</h1>
     <p class="lead">Tome el control manual del sistema de fermentacion y madurado</p>
@@ -44,9 +49,9 @@
                                 <br>
                             </div>
                         {{/ifEsElectrovalvula}}
-                        <button type="submit" name="accion" value="get_auto" class="btn btn-lg btn-block btn-outline-primary">Ceder Control Manual</button>
+                        <button dispositivo="{{dispositivo}}" name="accion" value="get_auto" class="btn btn-lg btn-block btn-outline-primary acciona_backend">Ceder Control Manual</button>
                     {{ else }}
-                        <button type="submit" name="accion" value="get_manual" class="btn btn-lg btn-block btn-primary">Controlar Manualmente</button>
+                        <button dispositivo="{{dispositivo}}" name="accion" value="get_manual" class="btn btn-lg btn-block btn-primary acciona_backend">Controlar Manualmente</button>
                     {{/ifManual }}
                     </div>
                     </form>
@@ -58,3 +63,7 @@
             {{/ifIn}}
         {{/each}}
     </div>
+
+        {{#contentFor 'scripts'}}
+                <script src="scripts/test.js" type="text/javascript"></script>
+        {{/contentFor}}
