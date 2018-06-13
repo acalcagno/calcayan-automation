@@ -1,0 +1,46 @@
+(function() {
+  var template = Handlebars.template, templates = Handlebars.templates = Handlebars.templates || {};
+templates['fermentador.hbs'] = template({"1":function(container,depth0,helpers,partials,data) {
+    return " 'border-success mb-3' ";
+},"3":function(container,depth0,helpers,partials,data) {
+    return " 'mb-4 box-shadow' ";
+},"5":function(container,depth0,helpers,partials,data) {
+    var stack1, helper, alias1=depth0 != null ? depth0 : (container.nullContext || {}), alias2=helpers.helperMissing;
+
+  return "                    <div>\r\n                        <button type=\"submit\" accion=\"abrir\" class=\"btn btn-primary\" "
+    + ((stack1 = (helpers.ifAbierto || (depth0 && depth0.ifAbierto) || alias2).call(alias1,depth0,{"name":"ifAbierto","hash":{},"fn":container.program(6, data, 0),"inverse":container.noop,"data":data})) != null ? stack1 : "")
+    + ">Abrir</button>\r\n                        <button type=\"submit\" accion=\"cerrar\" class=\"btn btn-secondary\""
+    + ((stack1 = (helpers.ifCerrado || (depth0 && depth0.ifCerrado) || alias2).call(alias1,depth0,{"name":"ifCerrado","hash":{},"fn":container.program(6, data, 0),"inverse":container.noop,"data":data})) != null ? stack1 : "")
+    + ">Cerrar</button>\r\n                        <br>\r\n                        <br>\r\n                    </div>\r\n                <button dispositivo=\""
+    + container.escapeExpression(((helper = (helper = helpers.dispositivo || (depth0 != null ? depth0.dispositivo : depth0)) != null ? helper : alias2),(typeof helper === "function" ? helper.call(alias1,{"name":"dispositivo","hash":{},"data":data}) : helper)))
+    + "\" accion=\"get_auto\" class=\"btn btn-lg btn-block btn-outline-primary acciona_backend\">Control Automático</button>\r\n";
+},"6":function(container,depth0,helpers,partials,data) {
+    return "disabled";
+},"8":function(container,depth0,helpers,partials,data) {
+    var helper;
+
+  return "                <button dispositivo=\""
+    + container.escapeExpression(((helper = (helper = helpers.dispositivo || (depth0 != null ? depth0.dispositivo : depth0)) != null ? helper : helpers.helperMissing),(typeof helper === "function" ? helper.call(depth0 != null ? depth0 : (container.nullContext || {}),{"name":"dispositivo","hash":{},"data":data}) : helper)))
+    + "\" accion=\"get_manual\" class=\"btn btn-lg btn-block btn-primary acciona_backend\">Controlar Manualmente</button>\r\n";
+},"compiler":[7,">= 4.0.0"],"main":function(container,depth0,helpers,partials,data) {
+    var stack1, helper, alias1=depth0 != null ? depth0 : (container.nullContext || {}), alias2=helpers.helperMissing, alias3="function", alias4=container.escapeExpression;
+
+  return "<div class=\"card "
+    + ((stack1 = (helpers.ifManual || (depth0 && depth0.ifManual) || alias2).call(alias1,depth0,{"name":"ifManual","hash":{},"fn":container.program(1, data, 0),"inverse":container.program(3, data, 0),"data":data})) != null ? stack1 : "")
+    + "\">\r\n    <form action=\"control\" method=\"post\">\r\n        <input type=\"hidden\" name=\"dispositivo\" value=\""
+    + alias4(((helper = (helper = helpers.dispositivo || (depth0 != null ? depth0.dispositivo : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"dispositivo","hash":{},"data":data}) : helper)))
+    + "\"/>\r\n        <div class=\"card-header\">\r\n            <h4 class=\"my-0 font-weight-normal\">"
+    + alias4((helpers.cueRender || (depth0 && depth0.cueRender) || alias2).call(alias1,(depth0 != null ? depth0.dispositivo : depth0),{"name":"cueRender","hash":{},"data":data}))
+    + "</h4>\r\n        </div>\r\n        <div class=\"card-body\">\r\n            <h1 class=\"card-title pricing-card-title\"> <small class=\"text-muted\">"
+    + alias4(((helper = (helper = helpers.control || (depth0 != null ? depth0.control : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"control","hash":{},"data":data}) : helper)))
+    + "</small></h1>\r\n            <ul class=\"list-unstyled mt-3 mb-4\">\r\n                <li>Temperatura actual: "
+    + alias4(container.lambda(((stack1 = (depth0 != null ? depth0.sensor_asociado : depth0)) != null ? stack1.temperatura : stack1), depth0))
+    + "ºc</li>\r\n                <li>frio "
+    + alias4((helpers.cueRender || (depth0 && depth0.cueRender) || alias2).call(alias1,(depth0 != null ? depth0.accion : depth0),{"name":"cueRender","hash":{},"data":data}))
+    + " hace 01:21 horas</li>\r\n                <li>calor "
+    + alias4((helpers.cueRender || (depth0 && depth0.cueRender) || alias2).call(alias1,((stack1 = (depth0 != null ? depth0.ev_calor_asociada : depth0)) != null ? stack1.accion : stack1),{"name":"cueRender","hash":{},"data":data}))
+    + " hace 01:21 horas</li>\r\n            </ul>\r\n"
+    + ((stack1 = (helpers.ifManual || (depth0 && depth0.ifManual) || alias2).call(alias1,depth0,{"name":"ifManual","hash":{},"fn":container.program(5, data, 0),"inverse":container.program(8, data, 0),"data":data})) != null ? stack1 : "")
+    + "        </div>\r\n    </form>\r\n</div>\r\n";
+},"useData":true});
+})();

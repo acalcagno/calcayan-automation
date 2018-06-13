@@ -3,8 +3,8 @@ var path = require('path');
 var express = require('express');
 var app = express();
 var bodyParser = require('body-parser');
-
-//var expressHbs = require('express-handlebars');
+var db;
+var MongoClient = require('mongodb').MongoClient;
 
 var express = require('express')
     , hbs     = require('express-hbs')
@@ -12,7 +12,6 @@ var express = require('express')
 ;
 var hbs_helpers = require('./config/handlebars-helpers');
 hbs_helpers.registerCustomHelpers(hbs);
-
 
 var modulo_mediciones = require("./app/mediciones");
 var dispos_module = require("./app/dispositivos");
@@ -28,47 +27,44 @@ app.use(bodyParser.json({ type: 'indexlication/json'}));
 app.use(log);
 
 //index.set('view engine', 'ejs');
-app.engine('.hbs', hbs.express4({defaultLayout: 'app/templates/layouts/layout', extname: '.hbs', helpers: require('./config/handlebars-helpers')}));
+app.engine('.hbs', hbs.express4({
+            layoutsDir: './app/templates/layouts',
+            defaultLayout: './app/templates/layouts/layout',
+            partialsDir: './app/templates/partials',
+            extname: '.hbs',
+            helpers: require('./config/handlebars-helpers')}));
+
 app.set('view engine', '.hbs');
 app.set('views', path.join(__dirname, 'app/templates'));
-
-
-
-var db;
-var MongoClient = require('mongodb').MongoClient;
 
 app.get('/scripts/*',function(req, res) {
     res.sendFile(path.join(__dirname, '/public', req.originalUrl));
 });
 
 app.get('/panel_de_control', function (req, res) {
-
-    db.collection('dispositivos').aggregate(
-        [
-            { $sort: { dispositivo: 1, fecha: 1 } },
-            {
-                $group:
-                    {
-                        _id: "$dispositivo",
-                        ultima_fecha: { $last: "$fecha" }
-                    }
-            }
-        ]
-    ).toArray(function(err, result)  {
+    db.collection('dispositivos').find().toArray(function(err, result) {
         if (err) {
             return console.log(err)
-        };
-        var fh = result[0].ultima_fecha;
-        db.collection('dispositivos').find({fecha: fh}).toArray(function(err2, result2) {
-            if (err2) {
-                return console.log(err2)
-            };
-            res.render('panel_de_control.hbs', { dispositivos: result2,
-                render_tarjetas:  ["chiller", "bomba_chiller", "calentador", "bomba_calentador", "electrovalvula_frio_fermentador_1", "electrovalvula_frio_fermentador_2","electrovalvula_frio_fermentador_3"],
-                render_detalle_termico: ["chiller", "calentador"] });
-        })
+        }
+
+        var evs_frio = result.filter(function(d) { return d.dispositivo.indexOf("frio_fermentador_") > -1 } );
+
+        //asociamos la ev_frio con el sensor y la ev_de calor para cada fermentador
+        evs_frio.forEach(function(ev) {
+
+            var nro_fermentador = ev.dispositivo.split('_')[ev.dispositivo.split('_').length-1];
+            var ev_calor_asociada = result.find(function(d) { return d.dispositivo.indexOf("calor_fermentador_" + nro_fermentador) > -1; });
+            var sensor_asociado = result.find(function(d) { return d.dispositivo.indexOf("fermentador" + nro_fermentador) > -1; });
+
+            ev.ev_calor_asociada = ev_calor_asociada;
+            ev.sensor_asociado = sensor_asociado;
+        });
+
+        res.render('panel_de_control.hbs', { dispositivos: result });
     });
 });
+
+
 
 app.get('/requests/', function(req, res) {
     db.collection('https').find().toArray(function(err, result)  {
@@ -81,21 +77,24 @@ app.get('/requests/', function(req, res) {
 
 
 inicializarDispositivos = function(next, mediciones, res){
-    dispositivos = new dispos_module.Dispositivos([{"dispositivo": "electrovalvula_frio_fermentador_1", "control": "automatico", "accion": "cerrar"}]);
-    dispositivos.configurar({"dispositivo": "electrovalvula_frio_fermentador_2", "control": "automatico", "accion": "cerrar"});
-    dispositivos.configurar({"dispositivo": "electrovalvula_frio_fermentador_3", "control": "automatico", "accion": "cerrar"});
-    dispositivos.configurar({"dispositivo": "electrovalvula_calor_fermentador_1", "control": "automatico", "accion": "cerrar"});
-    dispositivos.configurar({"dispositivo": "electrovalvula_calor_fermentador_2", "control": "automatico", "accion": "cerrar"});
-    dispositivos.configurar({"dispositivo": "electrovalvula_calor_fermentador_3", "control": "automatico", "accion": "cerrar"});
-    dispositivos.configurar({"dispositivo": "bomba_chiller", "control": "automatico", "accion": "apagar"});
-    dispositivos.configurar({"dispositivo": "bomba_calentador", "control": "automatico", "accion": "apagar"});
-    dispositivos.configurar({"dispositivo": "calentador", "control": "automatico", "accion": "apagar", "temp_ideal": 30, "tolerancia": 5});
-    dispositivos.configurar({"dispositivo": "chiller", "control": "automatico", "accion": "apagar", "temp_ideal": 5, "tolerancia": 2});
-    dispositivos.configurar({"dispositivo": "fermentador1", "temp_ideal": 20, "tolerancia":2});
-    dispositivos.configurar({"dispositivo": "fermentador2", "temp_ideal": 20, "tolerancia":2});
-    dispositivos.configurar({"dispositivo": "fermentador3", "temp_ideal": 20, "tolerancia":2});
+    dispositivos = new dispos_module.Dispositivos([{"dispositivo": "electrovalvula_frio_fermentador_1", "control": "automatico", "accion": "cerrar", "partial_name": "fermentador"}]);
+    dispositivos.configurar({"dispositivo": "electrovalvula_frio_fermentador_2", "control": "automatico", "accion": "cerrar", "partial_name": "fermentador"});
+    dispositivos.configurar({"dispositivo": "electrovalvula_frio_fermentador_3", "control": "automatico", "accion": "cerrar", "partial_name": "fermentador"});
+    dispositivos.configurar({"dispositivo": "electrovalvula_calor_fermentador_1", "control": "automatico", "accion": "cerrar", "partial_name": "none"});
+    dispositivos.configurar({"dispositivo": "electrovalvula_calor_fermentador_2", "control": "automatico", "accion": "cerrar", "partial_name": "none"});
+    dispositivos.configurar({"dispositivo": "electrovalvula_calor_fermentador_3", "control": "automatico", "accion": "cerrar", "partial_name": "none"});
+    dispositivos.configurar({"dispositivo": "bomba_chiller", "control": "automatico", "accion": "apagar", "partial_name": "bomba"});
+    dispositivos.configurar({"dispositivo": "bomba_calentador", "control": "automatico", "accion": "apagar", "partial_name": "bomba"});
+    dispositivos.configurar({"dispositivo": "calentador", "control": "automatico", "accion": "apagar", "temp_ideal": 30, "tolerancia": 5, "partial_name": "actuador_termico"});
+    dispositivos.configurar({"dispositivo": "chiller", "control": "automatico", "accion": "apagar", "temp_ideal": 5, "tolerancia": 2, "partial_name": "actuador_termico"});
+    dispositivos.configurar({"dispositivo": "fermentador1", "temp_ideal": 20, "tolerancia":2, "partial_name": "none"});
+    dispositivos.configurar({"dispositivo": "fermentador2", "temp_ideal": 20, "tolerancia":2, "partial_name": "none"});
+    dispositivos.configurar({"dispositivo": "fermentador3", "temp_ideal": 20, "tolerancia":2, "partial_name": "none"});
     dispositivos.save_on(db, 'dispositivos', next, mediciones, res);
 }
+
+
+
 
 app.post('/control/', function (req, res, next) {
     var nombre_dispositivo = req.body.dispositivo;
@@ -122,10 +121,57 @@ app.post('/control/', function (req, res, next) {
             dispositivo.accion = req.body.accion;
         }
 
-        dispositivos.save_on(db,'dispositivos', function() {
-            res.redirect("/panel_de_control");
-        });
+        dispositivos.save_on(db, 'dispositivos', function() {
+            db.collection('dispositivos').aggregate(
+                [
+                    { $sort: { dispositivo: 1, fecha: 1 } },
+                    {
+                        $group:
+                            {
+                                _id: "$dispositivo",
+                                ultima_fecha: { $last: "$fecha" }
+                            }
+                    }
+                ]
+            );
 
+
+            var evs_frio = result.filter(function(d) { return d.dispositivo.indexOf("frio_fermentador_") > -1 } );
+
+            //asociamos la ev_frio con el sensor y la ev_de calor para cada fermentador
+            evs_frio.forEach(function(ev) {
+
+                var nro_fermentador = ev.dispositivo.split('_')[ev.dispositivo.split('_').length-1];
+                var ev_calor_asociada = result.find(function(d) { return d.dispositivo.indexOf("calor_fermentador_" + nro_fermentador) > -1; });
+                var sensor_asociado = result.find(function(d) { return d.dispositivo.indexOf("fermentador" + nro_fermentador) > -1; });
+
+                ev.ev_calor_asociada = ev_calor_asociada;
+                ev.sensor_asociado = sensor_asociado;
+            });
+
+
+            res.render('fermentador.hbs', { layout:false, dispositivo: dispositivo });
+            ///res.redirect("/partial_fermentador");
+            /*.toArray(function(err, result)  {
+                if (err) {
+                    return console.log(err)
+                };
+                var fh = result[0].ultima_fecha;
+                db.collection('dispositivos').find({fecha: fh}).toArray(function(err2, result2) {
+                    if (err2) {
+                        return console.log(err2)
+                    };
+                    res.render('partials/test',{ layout: false ,
+                        locals: {
+                            dispositivo: result2[0],
+                            dispositivos: result2,
+                            render_tarjetas:  ["chiller", "bomba_chiller", "calentador", "bomba_calentador", "electrovalvula_frio_fermentador_1", "electrovalvula_frio_fermentador_2","electrovalvula_frio_fermentador_3"],
+                            render_detalle_termico: ["chiller", "calentador"]
+                        }}
+                    );
+                })
+            });*/
+        });
     });
 });
 

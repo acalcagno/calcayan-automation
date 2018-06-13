@@ -1,0 +1,30 @@
+
+    <div id="{{ dispositivo }}" class="card {{#ifManual this }} 'border-success mb-3' {{ else }} 'mb-4 box-shadow' {{/ifManual}}">
+
+    <form action="control" method="post">
+        <input type="hidden" name="dispositivo" value="{{ dispositivo }}"/>
+        <div class="card-header">{{ log  this }}
+            <h4 class="my-0 font-weight-normal">{{ cueRender dispositivo }}</h4>
+
+        </div>
+        <div class="card-body">
+            <h1 class="card-title pricing-card-title"> <small class="text-muted">{{ control }}</small></h1>
+            <ul class="list-unstyled mt-3 mb-4">
+                <li>Temperatura actual: {{ sensor_asociado.temperatura }}ºc</li>
+                <li>frio {{ cueRender accion }} hace 01:21 horas</li>
+                <li>calor {{ cueRender ev_calor_asociada.accion }} hace 01:21 horas</li>
+            </ul>
+            {{#ifManual this }}
+                    <div>
+                        <button type="submit" accion="abrir" class="btn btn-primary" {{#ifAbierto this }}disabled{{/ifAbierto}}>Abrir</button>
+                        <button type="submit" accion="cerrar" class="btn btn-secondary"{{#ifCerrado this }}disabled{{/ifCerrado}}>Cerrar</button>
+                        <br>
+                        <br>
+                    </div>
+                <button dispositivo="{{dispositivo}}" accion="get_auto" class="btn btn-lg btn-block btn-outline-primary acciona_backend">Control Automático</button>
+            {{ else }}
+                <button dispositivo="{{dispositivo}}" accion="get_manual" class="btn btn-lg btn-block btn-primary acciona_backend">Controlar Manualmente</button>
+            {{/ifManual }}
+        </div>
+    </form>
+</div>

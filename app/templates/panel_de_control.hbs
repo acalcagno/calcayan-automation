@@ -9,60 +9,16 @@
 
 <div class="container">
     <div class="card-deck mb-3 text-center ">
-
         {{# each dispositivos }}
-            {{#ifIn dispositivo ../render_tarjetas }}
-                <div class="card {{#ifManual this }} 'border-success mb-3' {{ else }} 'mb-4 box-shadow' {{/ifManual}}">
-                    <form action="control" method="post">
-                        <input type="hidden" name="dispositivo" value="{{ dispositivo }}"/>
-                        <div class="card-header">
-                            <h4 class="my-0 font-weight-normal">{{ dispositivo }}</h4>
-                        </div>
-                        <div class="card-body">
-                        <h1 class="card-title pricing-card-title">{{ accion }} <small class="text-muted"><br>{{ control }}</small></h1>
-                            <ul class="list-unstyled mt-3 mb-4">
-                                <li>Ha estado {{ accion }} por xx:xx horas</li>
-                                {{#if temp_ideal }}
-                                <li>Esta configurado en {{ temp_ideal }} ºc &plusmn; {{ tolerancia}}ºc</li>
-                                    {{#ifIn dispositivo ../render_detalle_termico }}
-                                        <li>Su temperatura actual es de {{ temperatura }}ºc.</li>
-                                    {{/ifIn }}
-                                {{/if }}
-                                {{#ifEsElectrovalvula dispositivo }}
-                                    <li>La ultima medicion del sensor {{fermentadorCorrespondiente dispositivo }} es: {{fermentador dispositivo ../dispositivos}}ºc</li>
-                                {{/ifEsElectrovalvula}}
-                            </ul>
-                    {{#ifManual this }}
-                        {{#ifEsElectrovalvula dispositivo }}
-                            <div>
-                                <button type="submit" accion="abrir" class="btn btn-primary" {{#ifAbierto this }}disabled{{/ifAbierto}}>Abrir</button>
-                                <button type="submit" accion="cerrar" class="btn btn-secondary"{{#ifCerrado this }}disabled{{/ifCerrado}}>Cerrar</button>
-                                <br>
-                                <br>
-                            </div>
-                        {{ else }}
-                            <div>
-                                <button type="submit" accion="encender" class="btn btn-primary" {{#ifEncendido this }}disabled{{/ifEncendido}}>Encender</button>
-                                <button type="submit" accion="apagar" class="btn btn-secondary"{{#ifApagado this }}disabled{{/ifApagado}}>Apagar</button>
-                                <br>
-                                <br>
-                            </div>
-                        {{/ifEsElectrovalvula}}
-                        <button dispositivo="{{dispositivo}}" accion="get_auto" class="btn btn-lg btn-block btn-outline-primary acciona_backend">Ceder Control Manual</button>
-                    {{ else }}
-                        <button dispositivo="{{dispositivo}}" accion="get_manual" class="btn btn-lg btn-block btn-primary acciona_backend">Controlar Manualmente</button>
-                    {{/ifManual }}
-                    </div>
-                    </form>
+            {{> (lookup . 'partial_name') }}
+            {{#ifThird @index}}
                 </div>
-                {{#ifThird @index}}
-                    </div>
-                    <div class="card-deck mb-3 text-center">
-                {{/ifThird}}
-            {{/ifIn}}
+                <div class="card-deck mb-3 text-center">
+            {{/ifThird}}
         {{/each}}
     </div>
 
-        {{#contentFor 'scripts'}}
-                <script src="scripts/test.js" type="text/javascript"></script>
-        {{/contentFor}}
+    {{#contentFor 'scripts'}}
+        <script src="scripts/test.js" type="text/javascript"></script>
+    {{/contentFor}}
+</script>

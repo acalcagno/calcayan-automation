@@ -14,17 +14,8 @@ exports.registerCustomHelpers = function(hbs) {
     });
 
     hbs.registerHelper('ifEsElectrovalvula',  function(value, options){
-        return (value.substring(0,14) == "electrovalvula")? options.fn( this ) : options.inverse(this);
-    });
-
-    hbs.registerHelper('fermentadorCorrespondiente',  function(value){
-        return "fermentador" + value.substring(value.length -1 , value.length );
-    });
-
-    hbs.registerHelper('fermentador',  function(value, dispositivos){
-        return dispositivos.filter(function(each) {
-            return each.dispositivo == "fermentador" + value.substring(value.length -1 , value.length );
-        })[0].temperatura;
+        return (this.dispositivo.substring(0,14) == "electrovalvula")? options.fn( this ) : options.inverse(this);
+        options.fn( this )
     });
 
     hbs.registerHelper('ifAbierto',  function(dispo, options){
@@ -41,6 +32,10 @@ exports.registerCustomHelpers = function(hbs) {
 
     hbs.registerHelper('ifApagado',  function(dispo, options){
         return (dispo.accion == "apagar")? options.fn( this ) : options.inverse(this);
+    });
+
+    hbs.registerHelper('cueRender', function(dispo) {
+       return dispo.replace('electrovalvula_frio_fermentador_', "Fermentador ").replace('bomba_', 'Bomba del ').replace("cerrar","cerrado").replace("abrir","abierto");
     });
 
     hbs.registerHelper('ifThird',  function(index, options){
