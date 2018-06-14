@@ -1,4 +1,3 @@
-
     <div id="{{ dispositivo }}" class="card {{#ifManual this }} 'border-success mb-3' {{ else }} 'mb-4 box-shadow' {{/ifManual}}">
 
     <form action="control" method="post">
@@ -14,17 +13,7 @@
                 <li>frio {{ cueRender accion }} hace 01:21 horas</li>
                 <li>calor {{ cueRender ev_calor_asociada.accion }} hace 01:21 horas</li>
             </ul>
-            {{#ifManual this }}
-                    <div>
-                        <button type="submit" accion="abrir" class="btn btn-primary" {{#ifAbierto this }}disabled{{/ifAbierto}}>Abrir</button>
-                        <button type="submit" accion="cerrar" class="btn btn-secondary"{{#ifCerrado this }}disabled{{/ifCerrado}}>Cerrar</button>
-                        <br>
-                        <br>
-                    </div>
-                <button dispositivo="{{dispositivo}}" accion="get_auto" class="btn btn-lg btn-block btn-outline-primary acciona_backend">Control Automático</button>
-            {{ else }}
-                <button dispositivo="{{dispositivo}}" accion="get_manual" class="btn btn-lg btn-block btn-primary acciona_backend">Controlar Manualmente</button>
-            {{/ifManual }}
+            {{> abrir_cerrar this }}
         </div>
     </form>
 </div>

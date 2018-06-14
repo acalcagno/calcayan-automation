@@ -13,11 +13,6 @@ exports.registerCustomHelpers = function(hbs) {
         return (value.control == "manual") ? options.fn( this ) : options.inverse(this);
     });
 
-    hbs.registerHelper('ifEsElectrovalvula',  function(value, options){
-        return (this.dispositivo.substring(0,14) == "electrovalvula")? options.fn( this ) : options.inverse(this);
-        options.fn( this )
-    });
-
     hbs.registerHelper('ifAbierto',  function(dispo, options){
         return (dispo.accion == "abrir")? options.fn( this ) : options.inverse(this);
     });
@@ -35,7 +30,7 @@ exports.registerCustomHelpers = function(hbs) {
     });
 
     hbs.registerHelper('cueRender', function(dispo) {
-       return dispo.replace('electrovalvula_frio_fermentador_', "Fermentador ").replace('bomba_', 'Bomba del ').replace("cerrar","cerrado").replace("abrir","abierto");
+       return dispo.replace('electrovalvula_frio_fermentador_', "Fermentador ").replace('bomba_', 'Bomba del ').replace("cerrar","cerrado").replace("abrir","abierto").replace("encender", "encendido").replace("apagar", "apagado");
     });
 
     hbs.registerHelper('ifThird',  function(index, options){

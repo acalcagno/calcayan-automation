@@ -1,0 +1,11 @@
+{{#ifManual this }}
+    <div>
+        <button type="submit" dispositivo="{{dispositivo}}" accion="encender" class="btn btn-primary acciona_backend" {{#ifEncendido this }}disabled{{/ifEncendido}}>Encender</button>
+        <button type="submit" dispositivo="{{dispositivo}}" accion="apagar" class="btn btn-secondary acciona_backend"{{#ifApagado this }}disabled{{/ifApagado}}>Apagar</button>
+        <br>
+        <br>
+    </div>
+    <button dispositivo="{{dispositivo}}" accion="get_auto" class="btn btn-lg btn-block btn-outline-primary acciona_backend">Control Automático</button>
+{{ else }}
+    <button dispositivo="{{dispositivo}}" accion="get_manual" class="btn btn-lg btn-block btn-primary acciona_backend">Controlar Manualmente</button>
+{{/ifManual }}

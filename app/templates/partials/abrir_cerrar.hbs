@@ -1,0 +1,11 @@
+{{#ifManual this }}
+    <div>
+        <button type="submit" dispositivo="{{dispositivo}}" accion="abrir" class="btn btn-primary acciona_backend" {{#ifAbierto this }}disabled{{/ifAbierto}}>Abrir</button>
+        <button type="submit" dispositivo="{{dispositivo}}" accion="cerrar" class="btn btn-secondary acciona_backend"{{#ifCerrado this }}disabled{{/ifCerrado}}>Cerrar</button>
+        <br>
+        <br>
+    </div>
+    <button dispositivo="{{dispositivo}}" accion="get_auto" class="btn btn-lg btn-block btn-outline-primary acciona_backend">Control Automático</button>
+{{ else }}
+    <button dispositivo="{{dispositivo}}" accion="get_manual" class="btn btn-lg btn-block btn-primary acciona_backend">Controlar Manualmente</button>
+{{/ifManual }}
