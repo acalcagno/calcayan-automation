@@ -6,7 +6,6 @@ var dispos_module = require("../app/dispositivos");
 describe("mediciones: ", function() {
     var acciones;
     var medidas;
-    var dispos;
 
     describe("el calentador" , function() {
         beforeEach(function () {

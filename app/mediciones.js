@@ -1,4 +1,5 @@
 exports.nuevas_mediciones = function(mediciones, dispositivos) {
+
     var acciones = [];
     var accion_de_la_bomba_del_chiller = "apagar";
     var accion_de_la_bomba_del_calentador = "apagar";
@@ -6,6 +7,13 @@ exports.nuevas_mediciones = function(mediciones, dispositivos) {
     var accion_sobre_el_calentador = "apagar";
 
     for (var i = 0; i < mediciones.length; i++) {
+
+        var actuador = dispositivos.get_by_name(mediciones[i].sensor);
+
+
+        if (actuador != undefined) //este if es temporal, solamente por ahora hay dispositivos medidos que no estan en la configuracion
+            actuador.accionar_sobre(acciones);
+
         if (mediciones[i].sensor == "chiller") {
             var config_chiller = dispositivos.buscar_config("chiller");
             config_chiller.temperatura = mediciones[i].temperatura;

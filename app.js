@@ -10,6 +10,7 @@ var express = require('express')
     , hbs     = require('express-hbs')
     , app
 ;
+
 var hbs_helpers = require('./config/handlebars-helpers');
 hbs_helpers.registerCustomHelpers(hbs);
 

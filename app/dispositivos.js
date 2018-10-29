@@ -1,9 +1,14 @@
+var Actuador = require("../app/Actuador").Actuador;
 var config;
+
 
 class Dispositivos {
 
+
     constructor(init) {
         config = init || [];
+
+        this.items = [];
     }
 
     configurar(cfg) {
@@ -12,6 +17,16 @@ class Dispositivos {
         } else {
             throw ("el dispositivo " + cfg.dispositivo + " ya fue configurado y se está queriendo configurar otra vez.");
         }
+
+        if (cfg.dispositivo == "chiller") {
+            this.items.push(new Actuador("chiller", function() { return "encender"; }));
+        }
+    }
+
+    get_by_name(nombre_dispositivo) {
+        return this.items.find(function(d) {
+            return d.nombre == nombre_dispositivo;
+        });
     }
 
     configurar_attr(dispositivo, attr, valor) {

@@ -16,7 +16,6 @@ var tarjeta_click = function(e) {
             var main_div_name = dom[0].id;
             dom.find(".acciona_backend").on('click', tarjeta_click);
             var new_ui = $("#"+main_div_name).replaceWith(dom);
-
         }
     });
 }
