@@ -128,8 +128,9 @@ get_acciones = function(mediciones, dispositivos, res) {
     res.send(respuesta);
 }
 */
-app.post('/mediciones/', function (req, res, next) {
-    res.send({
+app.post('/mediciones', function (req, res, next) {
+    console.log('ME: mediciones')
+    res.json({
         "acciones_a_realizar": [
             {
                 "dispositivo": "electrovalvula_frio_fermentador_1",
