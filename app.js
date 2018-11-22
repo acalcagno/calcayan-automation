@@ -4,7 +4,7 @@ var express = require('express');
 var app = express();
 var bodyParser = require('body-parser');
 
-var expressHbs = require('express-handlebars');
+/*var expressHbs = require('express-handlebars');
 
 var modulo_mediciones = require("./app/mediciones");
 var dispos_module = require("./app/dispositivos");
@@ -12,23 +12,28 @@ var http_requests_db_log = require("./app/http_requests_db_log");
 var http_api_to_model = require("./app/http_api_to_model");
 
 var dispositivos;
+*/
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.text());
 app.use(bodyParser.json({ type: 'indexlication/json'}));
 app.use(log);
-
+/*
 //index.set('view engine', 'ejs');
 app.engine('.hbs', expressHbs({defaultLayout: 'layout', extname: '.hbs', helpers: require('./config/handlebars-helpers')}));
 app.set('view engine', '.hbs');
-
+*/
 var db;
 var MongoClient = require('mongodb').MongoClient;
 
 app.get('/panel_de_control', function (req, res) {
-
-    db.collection('dispositivos').aggregate(
+    db.collection('dispositivos').find().toArray(function(err, result) {
+        if(err) console.log(err)
+        res.send(result)
+    })
+})
+/*    db.collection('dispositivos').aggregate(
         [
             { $sort: { dispositivo: 1, fecha: 1 } },
             {
@@ -82,6 +87,7 @@ inicializarDispositivos = function(next, mediciones, res){
     dispositivos.save_on(db, 'dispositivos', next, mediciones, res);
 }
 
+
 app.post('/control/', function (req, res, next) {
     var nombre_dispositivo = req.body.dispositivo;
     var dispositivo;
@@ -114,15 +120,60 @@ app.post('/control/', function (req, res, next) {
     });
 });
 
+
 get_acciones = function(mediciones, dispositivos, res) {
     var acciones = modulo_mediciones.nuevas_mediciones(mediciones, dispositivos);
     dispositivos.save_on(db, 'dispositivos', function() {}, mediciones, res)
     var respuesta = http_api_to_model.get_api_response({"acciones_a_realizar": acciones});
     res.send(respuesta);
 }
-
+*/
 app.post('/mediciones/', function (req, res, next) {
-
+    res.send({
+        "acciones_a_realizar": [
+            {
+                "dispositivo": "electrovalvula_frio_fermentador_1",
+                "accion": 0
+            },
+            {
+                "dispositivo": "electrovalvula_calor_fermentador_1",
+                "accion": 0
+            },
+            {
+                "dispositivo": "electrovalvula_frio_fermentador_2",
+                "accion": 0
+            },
+            {
+                "dispositivo": "electrovalvula_calor_fermentador_2",
+                "accion": 0
+            },
+            {
+                "dispositivo": "electrovalvula_frio_fermentador_3",
+                "accion": 0
+            },
+            {
+                "dispositivo": "electrovalvula_calor_fermentador_3",
+                "accion": 0
+            },
+            {
+                "dispositivo": "chiller",
+                "accion": 0
+            },
+            {
+                "dispositivo": "bomba_chiller",
+                "accion": 0
+            },
+            {
+                "dispositivo": "calentador",
+                "accion": 0
+            },
+            {
+                "dispositivo": "bomba_calentador",
+                "accion": 0
+            }
+        ]
+    })
+    /*
     var req_body = req.body;
     var mediciones = req_body.mediciones;
 
@@ -136,11 +187,25 @@ app.post('/mediciones/', function (req, res, next) {
         } else {
             get_acciones(mediciones, dispositivos, res);
         }
-    });
-});
+    });*/
+})
 
 function log(req, res, next) {
 
+    var req_log = { "hora": new Date(), "route-path": req.originalUrl, "request-method": req.method, "headers": req.headers, "body": req.body };
+
+
+    db.collection("https").insertOne(req_log, function(err, resultado) {
+        if (err) {
+            return console.log(err)
+        } else {
+            console.debug(resultado)
+            console.log('saved to database')
+            next();
+        }
+    });
+
+    /*
     var req_log = { "hora": new Date(), "route-path": req.originalUrl, "request-method": req.method, "headers": req.headers, "body": req.body };
 
     var send = res.send;
@@ -194,10 +259,10 @@ function log(req, res, next) {
     res.on('close', abortFn) // aborted pipeline
     res.on('error', errorFn) // pipeline internal error
 
+*/
 
-    next();
 }
-
+/*
 getLoggerForStatusCode = function(statusCode) {
     if (statusCode >= 500) {
         return console.error.bind(console)
@@ -208,6 +273,7 @@ getLoggerForStatusCode = function(statusCode) {
 
     return console.log.bind(console)
 }
+*/
 
 MongoClient.connect('mongodb://heroku_jtg8f10j:m8eofmkrgrvh3uqop33frikkig@ds129028.mlab.com:29028/heroku_jtg8f10j', function(err, client) {
     if (err) {
