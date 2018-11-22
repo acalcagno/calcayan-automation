@@ -4,6 +4,37 @@
 </div>
 
 <div class="container">
+
+        <div class="card-header">Checkbox to Round Switch</div>
+
+                {{# each dispositivos }}
+                    {{#ifIn dispositivo ../render_tarjetas }}
+                        <div class="row">
+                            <div class="col-10">
+                                {{ dispositivo }}
+                            </div>
+
+                            <div class="col-1">
+                                <label class="switch ">
+                                    <input type="checkbox" class="default" >
+                                    <span class="slider round"></span>
+                                </label>
+                            </div>
+                            <div class="col-1">
+                                <div class="checkbox">
+                                    <label>
+                                        <input type="checkbox" value="">
+                                        <span class="cr"><i class="cr-icon glyphicon glyphicon-ok"></i></span>
+                                        Auto
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    {{/ifIn}}
+                {{/each}}
+
+    </div>
+
     <div class="card-deck mb-3 text-center ">
 
         {{# each dispositivos }}

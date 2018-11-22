@@ -27,7 +27,6 @@ var db;
 var MongoClient = require('mongodb').MongoClient;
 
 app.get('/panel_de_control', function (req, res) {
-
     db.collection('dispositivos').aggregate(
         [
             { $sort: { dispositivo: 1, fecha: 1 } },
@@ -49,7 +48,7 @@ app.get('/panel_de_control', function (req, res) {
                 return console.log(err2)
             };
             res.render('panel_de_control.hbs', { dispositivos: result2,
-                render_tarjetas:  ["chiller", "bomba_chiller", "calentador", "bomba_calentador", "electrovalvula_frio_fermentador_1", "electrovalvula_frio_fermentador_2","electrovalvula_frio_fermentador_3"],
+                render_tarjetas:  ["chiller", "bomba_chiller", "electrovalvula_frio_fermentador_1", "electrovalvula_frio_fermentador_2", "electrovalvula_frio_fermentador_3"],
                 render_detalle_termico: ["chiller", "calentador"] });
         })
     });
@@ -63,7 +62,6 @@ app.get('/requests/', function(req, res) {
         res.render('requests.hbs', {https: result});
     });
 });
-
 
 inicializarDispositivos = function(next, mediciones, res){
     dispositivos = new dispos_module.Dispositivos([{"dispositivo": "electrovalvula_frio_fermentador_1", "control": "automatico", "accion": "cerrar"}]);
@@ -110,7 +108,6 @@ app.post('/control/', function (req, res, next) {
         dispositivos.save_on(db,'dispositivos', function() {
             res.redirect("/panel_de_control");
         });
-
     });
 });
 
@@ -219,8 +216,5 @@ MongoClient.connect('mongodb://heroku_jtg8f10j:m8eofmkrgrvh3uqop33frikkig@ds1290
         console.log(`Example app listening on port ${ PORT }`);
     });
 });
-
-
-
 
 module.exports = app; // for testing
