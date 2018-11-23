@@ -1,0 +1,36 @@
+<html>
+    <head>
+        <title>Calcayan automation - Panel de control</title>
+
+    </head>
+    <body>
+        <table id="dispositivos">
+            <thead>
+                <th>Dispositivo</th>
+                <th>Accion</th>
+            </thead>
+            <tbody>
+                <tr class="row-template" style="display:none">
+                    <td> {{caption}} </td>
+                    <td> {{accion}} </td>
+                </tr>
+            </tbody>
+        </table>
+        <div id="control_templates" style="display:none">
+            <button id="encender">Encender</button>
+            <button id="apagar">Apagar</button>
+        </div>
+
+    </body>
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"
+            integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+            crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.9.1/underscore-min.js"
+            crossorigin="anonymous"></script>
+
+
+
+    <script src="creador_de_grillas.js"></script>
+    <script src="panel_de_control.js"></script>
+    </script>
+</html>

@@ -1,8 +1,9 @@
 const PORT = process.env.PORT || 5000
 
-var express = require('express');
-var app = express();
-var bodyParser = require('body-parser');
+var express = require('express')
+var app = express()
+var bodyParser = require('body-parser')
+var path = require("path")
 
 /*var expressHbs = require('express-handlebars');
 
@@ -13,12 +14,12 @@ var http_api_to_model = require("./app/http_api_to_model");
 
 var dispositivos;
 */
-
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.text());
 app.use(bodyParser.json({ type: 'indexlication/json'}));
 app.use(log);
+
 /*
 //index.set('view engine', 'ejs');
 app.engine('.hbs', expressHbs({defaultLayout: 'layout', extname: '.hbs', helpers: require('./config/handlebars-helpers')}));
@@ -27,16 +28,22 @@ app.set('view engine', '.hbs');
 var db;
 var MongoClient = require('mongodb').MongoClient;
 
-app.get('/panel_de_control', function (req, res) {
+app.use(express.static(path.join(__dirname, 'public')))
 
-    res.send([{"_id":"5be125bd14050000045b595f","dispositivo":"electrovalvula_frio_fermentador_1","control":"automatico","accion":"cerrar","fecha":"2018-11-22T22:33:57.329Z"},{"_id":"5be125bd14050000045b5960","dispositivo":"electrovalvula_frio_fermentador_2","control":"automatico","accion":"cerrar","fecha":"2018-11-22T22:33:57.329Z"},{"_id":"5be125bd14050000045b5961","dispositivo":"electrovalvula_frio_fermentador_3","control":"automatico","accion":"cerrar","fecha":"2018-11-22T22:33:57.329Z"},{"_id":"5be125bd14050000045b5962","dispositivo":"electrovalvula_calor_fermentador_1","control":"automatico","accion":"cerrar","fecha":"2018-11-22T22:33:57.329Z"},{"_id":"5be125bd14050000045b5963","dispositivo":"electrovalvula_calor_fermentador_2","control":"automatico","accion":"cerrar","fecha":"2018-11-22T22:33:57.329Z"},{"_id":"5be125bd14050000045b5964","dispositivo":"electrovalvula_calor_fermentador_3","control":"automatico","accion":"cerrar","fecha":"2018-11-22T22:33:57.329Z"},{"_id":"5be125bd14050000045b5965","dispositivo":"bomba_chiller","control":"manual","accion":"encender","fecha":"2018-11-22T22:33:57.329Z"},{"_id":"5be125bd14050000045b5966","dispositivo":"bomba_calentador","control":"automatico","accion":"encender","fecha":"2018-11-22T22:33:57.329Z"},{"_id":"5be125bd14050000045b5967","dispositivo":"calentador","control":"automatico","accion":"apagar","temp_ideal":30,"tolerancia":5,"fecha":"2018-11-22T22:33:57.329Z","temperatura":48},{"_id":"5be125bd14050000045b5968","dispositivo":"chiller","control":"manual","accion":"encender","temp_ideal":5,"tolerancia":2,"fecha":"2018-11-22T22:33:57.329Z","temperatura":-5},{"_id":"5be125bd14050000045b5969","dispositivo":"fermentador1","temp_ideal":20,"tolerancia":2,"fecha":"2018-11-22T22:33:57.329Z","temperatura":1},{"_id":"5be125bd14050000045b596a","dispositivo":"fermentador2","temp_ideal":20,"tolerancia":2,"fecha":"2018-11-22T22:33:57.329Z","temperatura":30},{"_id":"5be125bd14050000045b596b","dispositivo":"fermentador3","temp_ideal":20,"tolerancia":2,"fecha":"2018-11-22T22:33:57.329Z","temperatura":21}])
+app.get('/dispositivos', function(req, res) {
+    db.collection('dispositivos').find().toArray(function(err, result) {
+        if(err) console.log(err)
+        res.send(result)
+    })
+})
+    //res.send([{"_id":"5be125bd14050000045b595f","dispositivo":"electrovalvula_frio_fermentador_1","control":"automatico","accion":"cerrar","fecha":"2018-11-22T22:33:57.329Z"},{"_id":"5be125bd14050000045b5960","dispositivo":"electrovalvula_frio_fermentador_2","control":"automatico","accion":"cerrar","fecha":"2018-11-22T22:33:57.329Z"},{"_id":"5be125bd14050000045b5961","dispositivo":"electrovalvula_frio_fermentador_3","control":"automatico","accion":"cerrar","fecha":"2018-11-22T22:33:57.329Z"},{"_id":"5be125bd14050000045b5962","dispositivo":"electrovalvula_calor_fermentador_1","control":"automatico","accion":"cerrar","fecha":"2018-11-22T22:33:57.329Z"},{"_id":"5be125bd14050000045b5963","dispositivo":"electrovalvula_calor_fermentador_2","control":"automatico","accion":"cerrar","fecha":"2018-11-22T22:33:57.329Z"},{"_id":"5be125bd14050000045b5964","dispositivo":"electrovalvula_calor_fermentador_3","control":"automatico","accion":"cerrar","fecha":"2018-11-22T22:33:57.329Z"},{"_id":"5be125bd14050000045b5965","dispositivo":"bomba_chiller","control":"manual","accion":"encender","fecha":"2018-11-22T22:33:57.329Z"},{"_id":"5be125bd14050000045b5966","dispositivo":"bomba_calentador","control":"automatico","accion":"encender","fecha":"2018-11-22T22:33:57.329Z"},{"_id":"5be125bd14050000045b5967","dispositivo":"calentador","control":"automatico","accion":"apagar","temp_ideal":30,"tolerancia":5,"fecha":"2018-11-22T22:33:57.329Z","temperatura":48},{"_id":"5be125bd14050000045b5968","dispositivo":"chiller","control":"manual","accion":"encender","temp_ideal":5,"tolerancia":2,"fecha":"2018-11-22T22:33:57.329Z","temperatura":-5},{"_id":"5be125bd14050000045b5969","dispositivo":"fermentador1","temp_ideal":20,"tolerancia":2,"fecha":"2018-11-22T22:33:57.329Z","temperatura":1},{"_id":"5be125bd14050000045b596a","dispositivo":"fermentador2","temp_ideal":20,"tolerancia":2,"fecha":"2018-11-22T22:33:57.329Z","temperatura":30},{"_id":"5be125bd14050000045b596b","dispositivo":"fermentador3","temp_ideal":20,"tolerancia":2,"fecha":"2018-11-22T22:33:57.329Z","temperatura":21}])
 
 
     /*db.collection('dispositivos').find().toArray(function(err, result) {
         if(err) console.log(err)
         res.send(result)
     })*/
-})
+
 /*    db.collection('dispositivos').aggregate(
         [
             { $sort: { dispositivo: 1, fecha: 1 } },
