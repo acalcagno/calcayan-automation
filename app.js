@@ -118,8 +118,8 @@ get_acciones = function(dispositivos, mediciones) {
     agregar_accion_guardada_en_la_base(acciones, dispositivos, "electrovalvula_frio_fermentador_3")
     agregar_accion_nula(acciones, "electrovalvula_calor_fermentador_3")
 
-    agregar_accion_guardada_en_la_base(acciones, dispositivos, "chiller")
-    agregar_accion_guardada_en_la_base(acciones, dispositivos, "bomba_chiller")
+    configurar_chiller(acciones, dispositivos, mediciones)
+    configurar_bomba_chiller(acciones, dispositivos, mediciones)
 
     agregar_accion_nula(acciones, "calentador")
     agregar_accion_nula(acciones, "bomba_calentador")
@@ -151,31 +151,84 @@ configurar_ev = function (acciones, dispositivos, mediciones, nombre_ev) {
                             if(medicion_chiller.temperatura >= medicion_fermentador.temperatura ) {
                                 console.log('el fermentador ' + fermentador.dispositivo + ' necesita frio pero el chiller está mas caliente')
                                 acciones.push({"dispositivo": nombre_ev, "accion": 0})
-
-                                /*if (ev.accion != 0) {
-                                    db.collection('dispositivos').update({dispositivo: nombre_ev}, { $set: { accion: 0 }})
-                                }*/
                             } else {
                                 acciones.push({"dispositivo": nombre_ev, "accion": 1})
-                                    /*if (ev.accion != 1) {
-                                    db.collection('dispositivos').update({dispositivo: nombre_ev}, { $set: { accion: 1 }})
-                                    }*/
                             }
                         }
                     }
                     if(medicion_fermentador.temperatura < fermentador.temp_ideal - fermentador.tolerancia) {
                         acciones.push({"dispositivo": nombre_ev, "accion": 0})
-                        /*if (ev.accion != 0) {
-                            db.collection('dispositivos').update({dispositivo: nombre_ev}, { $set: { accion: 0 }})
-                        }*/
-                    
-
                     }
                 }
             }
         }
     }
 }
+
+configurar_chiller = function(acciones, dispositivos, mediciones) {
+    var medicion_chiller = _.find(mediciones, mc => mc.sensor == "chiller")
+    if(!medicion_chiller) {
+        console.log('no se encontro la medicion del chiller')
+    } else {
+        if (medicion_chiller.temperatura <= 1 ) {
+            console.log('se corta el chiller por anticongelamiento en >= 1 grado')
+            acciones.push({"dispositivo": "chiller", "accion": 0})
+        } else {
+            var chiller = _.find(dispositivos, d => d.dispositivo == "chiller")
+            if(!chiller) {
+                console.log('no se encontro el chiller en la db')
+            } else {
+                if (chiller.control == "manual") {
+                    agregar_accion_guardada_en_la_base(acciones, dispositivos, "chiller")
+                } else {
+                    if (medicion_chiller.temperatura > chiller.temp_ideal + chiller.tolerancia) {
+                        acciones.push({"dispositivo": chiller, "accion": 1})
+                    } else {
+                        if (medicion_chiller.temperatura < chiller.temp_ideal - chiller.tolerancia) {
+                            acciones.push({"dispositivo": "chiller", "accion": 0})
+                        } else {
+                            //dejo como estaba
+                            acciones.push({"dispositivo": "chiller", "accion": chiller.accion})
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+configurar_bomba_chiller = function(acciones, dispositivos, mediciones) {
+    var accion_chiller = _.find(acciones, a => a.dispositivo == "chiller")
+    if (!accion_chiller) {
+        console.log("no se pudo encontrar una accion para definida para el chiler, por lo tanto la bomba_chiller no sabe si debe encenderse por anticongelamiento")
+        acciones.push({"dispositivo": "bomba_chiller", "accion": 0})
+    } else {
+        if (accion_chiller.accion == 1) {
+            //se enciendo por anticongelamiento
+            acciones.push({"dispositivo": "bomba_chiller", "accion": 1})
+        } else {
+            var bomba_chiller = _.find(dispositivos, d=> d.dispositivo == "bomba_chiller")
+            if (!bomba_chiller) {
+                console.log("no se encontro el dispositivo bomba_chiller en la db")
+                acciones.push({"dispositivo": "bomba_chiller", "accion": 0})
+            } else {
+                if (bomba_chiller.control == "manual") {
+                    agregar_accion_guardada_en_la_base(acciones, dispositivos, "bomba_chiller")
+                } else {
+                    var alguna_ev_abierta = _.some(dispositivos, d => {
+                        return (d.accion == 1 && d.dispositivo.substring(0, "electrovalvula_frio_fermentador".length) == "electrovalvula_frio_fermentador")
+                    })
+                    if (alguna_ev_abierta) {
+                        acciones.push({"dispositivo": "bomba_chiller", "accion": 1})
+                    } else {
+                        acciones.push({"dispositivo": "bomba_chiller", "accion": 0})
+                    }
+                }
+            }
+        }
+    }
+}
+
 
 fermentador_de = function(nombre_ev, dispositivos) {
     return _.find(dispositivos, d => d.dispositivo == "fermentador" + nombre_ev.substring(nombre_ev.length-1,nombre_ev.length))
@@ -186,12 +239,10 @@ function log(req, res, next) {
     next()
 }
 
-
 MongoClient.connect('mongodb://heroku_jtg8f10j:m8eofmkrgrvh3uqop33frikkig@ds129028.mlab.com:29028/heroku_jtg8f10j', function(err, client) {
     if (err) {
         return console.log(err);
     }
-
     db = client.db('heroku_jtg8f10j'); // whatever your database name is*/
     app.listen(PORT, function () {
         console.log(`Calcayan automation listening on port ${ PORT }`);
