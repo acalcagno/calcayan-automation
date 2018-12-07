@@ -150,20 +150,26 @@ configurar_ev = function (acciones, dispositivos, mediciones, nombre_ev) {
                         } else {
                             if(medicion_chiller.temperatura >= medicion_fermentador.temperatura ) {
                                 console.log('el fermentador ' + fermentador.dispositivo + ' necesita frio pero el chiller está mas caliente')
-                                if (ev.accion != 0) {
+                                acciones.push({"dispositivo": nombre_ev, "accion": 0)
+
+                                /*if (ev.accion != 0) {
                                     db.collection('dispositivos').update({dispositivo: nombre_ev}, { $set: { accion: 0 }})
-                                }
+                                }*/
                             } else {
-                                if (ev.accion != 1) {
+                                acciones.push({"dispositivo": nombre_ev, "accion": 1)
+                                    /*if (ev.accion != 1) {
                                     db.collection('dispositivos').update({dispositivo: nombre_ev}, { $set: { accion: 1 }})
-                                }
+                                    }*/
                             }
                         }
                     }
                     if(medicion_fermentador.temperatura < fermentador.temp_ideal - fermentador.tolerancia) {
-                        if (ev.accion != 0) {
+                        acciones.push({"dispositivo": nombre_ev, "accion": 0)
+                        /*if (ev.accion != 0) {
                             db.collection('dispositivos').update({dispositivo: nombre_ev}, { $set: { accion: 0 }})
-                        }
+                        }*/
+                    }
+
                     }
                 }
             }
