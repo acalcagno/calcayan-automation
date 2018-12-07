@@ -168,7 +168,7 @@ configurar_ev = function (acciones, dispositivos, mediciones, nombre_ev) {
                         /*if (ev.accion != 0) {
                             db.collection('dispositivos').update({dispositivo: nombre_ev}, { $set: { accion: 0 }})
                         }*/
-                    }
+                    
 
                     }
                 }
