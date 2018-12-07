@@ -121,7 +121,7 @@ get_acciones = function(dispositivos, mediciones) {
     agregar_accion_nula(acciones, "calentador")
     agregar_accion_nula(acciones, "bomba_calentador")
 
-    return acciones
+    return { "acciones_a_realizar": acciones }
 }
 
 configurar_ev = function (acciones, dispositivos, mediciones, nombre_ev) {
