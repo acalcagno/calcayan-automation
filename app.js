@@ -42,7 +42,7 @@ app.post('/mediciones', function(req, res) {
 
     calcular_respuesta_para_el_procesador(mediciones,
         (acciones, mediciones, dispositivos) => {
-            res.send(acciones)
+            res.send({ "acciones_a_realizar": acciones })
             update_dispositivos(acciones, mediciones, dispositivos)
         },
         () => res.send(error_mediciones()))
@@ -121,7 +121,7 @@ get_acciones = function(dispositivos, mediciones) {
     agregar_accion_nula(acciones, "calentador")
     agregar_accion_nula(acciones, "bomba_calentador")
 
-    return { "acciones_a_realizar": acciones }
+    return acciones
 }
 
 configurar_ev = function (acciones, dispositivos, mediciones, nombre_ev) {
