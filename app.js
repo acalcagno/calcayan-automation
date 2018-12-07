@@ -182,7 +182,7 @@ configurar_chiller = function(acciones, dispositivos, mediciones) {
                     agregar_accion_guardada_en_la_base(acciones, dispositivos, "chiller")
                 } else {
                     if (medicion_chiller.temperatura > chiller.temp_ideal + chiller.tolerancia) {
-                        acciones.push({"dispositivo": chiller, "accion": 1})
+                        acciones.push({"dispositivo": "chiller", "accion": 1})
                     } else {
                         if (medicion_chiller.temperatura < chiller.temp_ideal - chiller.tolerancia) {
                             acciones.push({"dispositivo": "chiller", "accion": 0})
