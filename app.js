@@ -4,290 +4,136 @@ var express = require('express')
 var app = express()
 var bodyParser = require('body-parser')
 var path = require("path")
-
-/*var expressHbs = require('express-handlebars');
-
-var modulo_mediciones = require("./app/mediciones");
-var dispos_module = require("./app/dispositivos");
-var http_requests_db_log = require("./app/http_requests_db_log");
-var http_api_to_model = require("./app/http_api_to_model");
-
-var dispositivos;
-*/
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({extended: true}));
-app.use(bodyParser.text());
-app.use(bodyParser.json({ type: 'indexlication/json'}));
-app.use(log);
-
-/*
-//index.set('view engine', 'ejs');
-app.engine('.hbs', expressHbs({defaultLayout: 'layout', extname: '.hbs', helpers: require('./config/handlebars-helpers')}));
-app.set('view engine', '.hbs');
-*/
+var _ = require("underscore")
+var ObjectID = require('mongodb').ObjectID
 var db;
+
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({
+    extended: true
+}));
+
+app.use(log)
+
 var MongoClient = require('mongodb').MongoClient;
 
 app.use(express.static(path.join(__dirname, 'public')))
 
+//listar el contenido de la coleccion dispositivos de la base (se usa para generar el panel de control)
 app.get('/dispositivos', function(req, res) {
     db.collection('dispositivos').find().toArray(function(err, result) {
-        if(err) console.log(err)
+        if(err) {
+            console.log('Existió un error al recuperar los dispositivos de la base de datos durante la operacion GET "/dispositivos"')
+            console.log(err)
+        }
         res.send(result)
     })
 })
-    //res.send([{"_id":"5be125bd14050000045b595f","dispositivo":"electrovalvula_frio_fermentador_1","control":"automatico","accion":"cerrar","fecha":"2018-11-22T22:33:57.329Z"},{"_id":"5be125bd14050000045b5960","dispositivo":"electrovalvula_frio_fermentador_2","control":"automatico","accion":"cerrar","fecha":"2018-11-22T22:33:57.329Z"},{"_id":"5be125bd14050000045b5961","dispositivo":"electrovalvula_frio_fermentador_3","control":"automatico","accion":"cerrar","fecha":"2018-11-22T22:33:57.329Z"},{"_id":"5be125bd14050000045b5962","dispositivo":"electrovalvula_calor_fermentador_1","control":"automatico","accion":"cerrar","fecha":"2018-11-22T22:33:57.329Z"},{"_id":"5be125bd14050000045b5963","dispositivo":"electrovalvula_calor_fermentador_2","control":"automatico","accion":"cerrar","fecha":"2018-11-22T22:33:57.329Z"},{"_id":"5be125bd14050000045b5964","dispositivo":"electrovalvula_calor_fermentador_3","control":"automatico","accion":"cerrar","fecha":"2018-11-22T22:33:57.329Z"},{"_id":"5be125bd14050000045b5965","dispositivo":"bomba_chiller","control":"manual","accion":"encender","fecha":"2018-11-22T22:33:57.329Z"},{"_id":"5be125bd14050000045b5966","dispositivo":"bomba_calentador","control":"automatico","accion":"encender","fecha":"2018-11-22T22:33:57.329Z"},{"_id":"5be125bd14050000045b5967","dispositivo":"calentador","control":"automatico","accion":"apagar","temp_ideal":30,"tolerancia":5,"fecha":"2018-11-22T22:33:57.329Z","temperatura":48},{"_id":"5be125bd14050000045b5968","dispositivo":"chiller","control":"manual","accion":"encender","temp_ideal":5,"tolerancia":2,"fecha":"2018-11-22T22:33:57.329Z","temperatura":-5},{"_id":"5be125bd14050000045b5969","dispositivo":"fermentador1","temp_ideal":20,"tolerancia":2,"fecha":"2018-11-22T22:33:57.329Z","temperatura":1},{"_id":"5be125bd14050000045b596a","dispositivo":"fermentador2","temp_ideal":20,"tolerancia":2,"fecha":"2018-11-22T22:33:57.329Z","temperatura":30},{"_id":"5be125bd14050000045b596b","dispositivo":"fermentador3","temp_ideal":20,"tolerancia":2,"fecha":"2018-11-22T22:33:57.329Z","temperatura":21}])
 
+app.post('/control', function(req, res) {
+    db.collection('dispositivos').update({_id : req.body.model_id }, { $set: { accion: req.body.accion }}, (err, res) => res.end() )
+})
 
-    /*db.collection('dispositivos').find().toArray(function(err, result) {
-        if(err) console.log(err)
-        res.send(result)
-    })*/
-
-/*    db.collection('dispositivos').aggregate(
-        [
-            { $sort: { dispositivo: 1, fecha: 1 } },
-            {
-                $group:
-                    {
-                        _id: "$dispositivo",
-                        ultima_fecha: { $last: "$fecha" }
-                    }
-            }
-        ]
-    ).toArray(function(err, result)  {
-        if (err) {
-            return console.log(err)
-        };
-        var fh = result[0].ultima_fecha;
-        db.collection('dispositivos').find({fecha: fh}).toArray(function(err2, result2) {
-            if (err2) {
-                return console.log(err2)
-            };
-            res.render('panel_de_control.hbs', { dispositivos: result2,
-                render_tarjetas:  ["chiller", "bomba_chiller", "calentador", "bomba_calentador", "electrovalvula_frio_fermentador_1", "electrovalvula_frio_fermentador_2","electrovalvula_frio_fermentador_3"],
-                render_detalle_termico: ["chiller", "calentador"] });
-        })
-    });
-});
-
-app.get('/requests/', function(req, res) {
-    db.collection('https').find().toArray(function(err, result)  {
-        if (err) {
-            return console.log(err)
-        };
-        res.render('requests.hbs', {https: result});
-    });
-});
-
-
-inicializarDispositivos = function(next, mediciones, res){
-    dispositivos = new dispos_module.Dispositivos([{"dispositivo": "electrovalvula_frio_fermentador_1", "control": "automatico", "accion": "cerrar"}]);
-    dispositivos.configurar({"dispositivo": "electrovalvula_frio_fermentador_2", "control": "automatico", "accion": "cerrar"});
-    dispositivos.configurar({"dispositivo": "electrovalvula_frio_fermentador_3", "control": "automatico", "accion": "cerrar"});
-    dispositivos.configurar({"dispositivo": "electrovalvula_calor_fermentador_1", "control": "automatico", "accion": "cerrar"});
-    dispositivos.configurar({"dispositivo": "electrovalvula_calor_fermentador_2", "control": "automatico", "accion": "cerrar"});
-    dispositivos.configurar({"dispositivo": "electrovalvula_calor_fermentador_3", "control": "automatico", "accion": "cerrar"});
-    dispositivos.configurar({"dispositivo": "bomba_chiller", "control": "automatico", "accion": "apagar"});
-    dispositivos.configurar({"dispositivo": "bomba_calentador", "control": "automatico", "accion": "apagar"});
-    dispositivos.configurar({"dispositivo": "calentador", "control": "automatico", "accion": "apagar", "temp_ideal": 30, "tolerancia": 5});
-    dispositivos.configurar({"dispositivo": "chiller", "control": "automatico", "accion": "apagar", "temp_ideal": 5, "tolerancia": 2});
-    dispositivos.configurar({"dispositivo": "fermentador1", "temp_ideal": 20, "tolerancia":2});
-    dispositivos.configurar({"dispositivo": "fermentador2", "temp_ideal": 20, "tolerancia":2});
-    dispositivos.configurar({"dispositivo": "fermentador3", "temp_ideal": 20, "tolerancia":2});
-    dispositivos.save_on(db, 'dispositivos', next, mediciones, res);
-}
-
-
-app.post('/control/', function (req, res, next) {
-    var nombre_dispositivo = req.body.dispositivo;
-    var dispositivo;
-
-    db.collection('dispositivos').find().toArray(function(err, result) {
-        if (err) {
-            return console.log(err)
-        }
-        var dispositivos = new dispos_module.Dispositivos(result);
-        var dispositivo = dispositivos.buscar_config(nombre_dispositivo);
-
-        if (req.body.accion == "get_manual") {
-            dispositivo.control = "manual";
-        } else if (req.body.accion == "get_auto") {
-            dispositivo.control = "automatico";
-        } else if (req.body.accion == "encender") {
-            dispositivo.accion = req.body.accion;
-        } else if (req.body.accion == "apagar") {
-            dispositivo.accion = req.body.accion;
-        } else if (req.body.accion == "abrir") {
-            dispositivo.accion = req.body.accion;
-        } else if (req.body.accion == "cerrar") {
-            dispositivo.accion = req.body.accion;
-        }
-
-        dispositivos.save_on(db,'dispositivos', function() {
-            res.redirect("/panel_de_control");
-        });
-
-    });
-});
-
-
-get_acciones = function(mediciones, dispositivos, res) {
-    var acciones = modulo_mediciones.nuevas_mediciones(mediciones, dispositivos);
-    dispositivos.save_on(db, 'dispositivos', function() {}, mediciones, res)
-    var respuesta = http_api_to_model.get_api_response({"acciones_a_realizar": acciones});
-    res.send(respuesta);
-}
-*/
-app.post('/mediciones', function (req, res, next) {
-    console.log('ME: mediciones')
-    res.send({
-        "acciones_a_realizar": [
-            {
-                "dispositivo": "electrovalvula_frio_fermentador_1",
-                "accion": 0
-            },
-            {
-                "dispositivo": "electrovalvula_calor_fermentador_1",
-                "accion": 0
-            },
-            {
-                "dispositivo": "electrovalvula_frio_fermentador_2",
-                "accion": 0
-            },
-            {
-                "dispositivo": "electrovalvula_calor_fermentador_2",
-                "accion": 0
-            },
-            {
-                "dispositivo": "electrovalvula_frio_fermentador_3",
-                "accion": 0
-            },
-            {
-                "dispositivo": "electrovalvula_calor_fermentador_3",
-                "accion": 0
-            },
-            {
-                "dispositivo": "chiller",
-                "accion": 0
-            },
-            {
-                "dispositivo": "bomba_chiller",
-                "accion": 0
-            },
-            {
-                "dispositivo": "calentador",
-                "accion": 0
-            },
-            {
-                "dispositivo": "bomba_calentador",
-                "accion": 0
-            }
-        ]
-    })
-    /*
+app.post('/mediciones', function(req, res) {
     var req_body = req.body;
     var mediciones = req_body.mediciones;
 
-    db.collection('dispositivos').find().toArray(function(err, result)  {
-        if (err) {
-            return console.log(err)
-        };
-        dispositivos = new dispos_module.Dispositivos(result);
-        if(result.length == 0) {
-            inicializarDispositivos(get_acciones, mediciones, res);
-        } else {
-            get_acciones(mediciones, dispositivos, res);
-        }
-    });*/
+    var ultima_respuesta
+
+    calcular_respuesta_para_el_procesador(mediciones,
+        (acciones, mediciones, dispositivos) => {
+            res.send(acciones)
+            update_dispositivos(acciones, mediciones, dispositivos)
+        },
+        () => res.send(error_mediciones()))
+
 })
 
-function log(req, res, next) {
-    console.log('sent to log')
-    next()
-/*
-    var req_log = { "hora": new Date(), "route-path": req.originalUrl, "request-method": req.method, "headers": req.headers, "body": req.body };
+update_dispositivos = function(acciones, mediciones, dispositivos) {
+    var a = acciones
 
 
-    db.collection("https").insertOne(req_log, function(err, resultado) {
-        if (err) {
-            return console.log(err)
+    //seteo las nuevas acciones tomadas
+    _.each(acciones, a =>  {
+        var disp = _.find(dispositivos, d => d.dispositivo == a.dispositivo)
+        if (!disp) {
+            console.log('no se encontro el dispositivo ' + a.dispositivo + ' en la base de datos')
         } else {
-            console.debug(resultado)
-            console.log('saved to database')
-            next();
+            if (disp.accion != a.accion) {
+                db.collection('dispositivos').update({_id: ObjectID(disp._id)}, { $set: {accion: a.accion}})
+            }
         }
-    });*/
+    })
 
-    /*
-    var req_log = { "hora": new Date(), "route-path": req.originalUrl, "request-method": req.method, "headers": req.headers, "body": req.body };
-
-    var send = res.send;
-    res.send = function (body) {
-        res.body = body
-        send.call(this, body);
-    };
-
-    const cleanup = function() {
-        res.removeListener('finish', logFn)
-        res.removeListener('close', abortFn)
-        res.removeListener('error', errorFn)
-    }
-
-    const logFn = function() {
-        cleanup()
-        if (req_log["route-path"] == "/requests") return; //no loguear la consulta de logs.
-
-        const logger = getLoggerForStatusCode(res.statusCode);
-        var res_log = {"statusCode": res.statusCode, "statusMessage": res.statusMessage, "body": res.body };
-        var https = { "request": req_log, "response": res_log };
-        db.collection("https").insertOne(https, function(err, res) {
-            if (err) return console.log(err)
-            console.log('saved to database')
-        });
-    }
-
-    const abortFn = function(){
-        cleanup();
-        var res_log = {"statusCode": "ABORTED BY CLIENT", "statusMessage": 'Request aborted by the client', "body": res.body };
-        var https = { "request": req_log, "response": res_log };
-        db.collection("https").insertOne(https, function(err, res) {
-            if (err) return console.log(err)
-            console.log('saved to database')
-        });
-        //console.warn('Request aborted by the client')
-    }
-
-    const errorFn = function(){
-        cleanup()
-        var res_log = {"statusCode": "PIPELINE ERROR", "statusMessage": 'Request pipeline error: ${err}', "body": res.body };
-        var https = { "request": req_log, "response": res_log };
-        db.collection("https").insertOne(https, function(err, res) {
-            if (err) return console.log(err)
-            console.log('saved to database')
-        });
-    }
+    //seteo las nuevas temperaturas medidas
+    _.each(mediciones, m => {
+        var disp = _.find(dispositivos, d => d.dispositivo == m.sensor)
+        if (!disp) {
+            console.log('no se encontro el dispositivo ' + m.sensor + ' en la base de datos')
+        } else {
+            if(disp.temperatura != m.temperatura) {
+                db.collection('dispositivos').update({_id: ObjectID(disp._id)}, { $set: {temperatura: m.temperatura}})
+            }
+        }
+    })
 
 
-    res.on('finish', logFn) // successful pipeline (regardless of its response)
-    res.on('close', abortFn) // aborted pipeline
-    res.on('error', errorFn) // pipeline internal error
-
-*/
 
 }
-/*
-getLoggerForStatusCode = function(statusCode) {
-    if (statusCode >= 500) {
-        return console.error.bind(console)
-    }
-    if (statusCode >= 400) {
-        return console.warn.bind(console)
-    }
 
-    return console.log.bind(console)
+error_mediciones = function() {
+    //esto debe devolver una respusta al procesador de parada de emergencia
+    //osea, todas las acciones de apagar y cerrar todo.
 }
-*/
+
+calcular_respuesta_para_el_procesador = function(mediciones, next, err_callback) {
+    db.collection('dispositivos').find().toArray(function(err, dispositivos) {
+        if (err) {
+            console.log('Existió un error al recuperar los dispositivos de la base de datos durante la operacion POST "/mediciones"')
+            console.log(err)
+            err_callback()
+        } else {
+            var acciones = get_acciones(dispositivos)
+            next(acciones, mediciones, dispositivos)
+        }
+    })
+}
+
+agregar_accion_en_la_base = function(acciones, dispositivos, nombre_dispositivo) {
+    acciones.push({"dispositivo": nombre_dispositivo, "accion": _.find(dispositivos, d => d.dispositivo == nombre_dispositivo).accion});
+}
+
+agregar_accion_nula = function(acciones, nombre_dispositivo) {
+    acciones.push({"dispositivo": nombre_dispositivo, "accion": 0} );
+}
+
+get_acciones = function(dispositivos) {
+    var acciones = []
+
+    agregar_accion_en_la_base(acciones, dispositivos, "electrovalvula_frio_fermentador_1")
+    agregar_accion_nula(acciones, "electrovalvula_calor_fermentador_1")
+
+    agregar_accion_en_la_base(acciones, dispositivos, "electrovalvula_frio_fermentador_2")
+    agregar_accion_nula(acciones, "electrovalvula_calor_fermentador_2")
+
+    agregar_accion_en_la_base(acciones, dispositivos, "electrovalvula_frio_fermentador_3")
+    agregar_accion_nula(acciones, "electrovalvula_calor_fermentador_3")
+
+    agregar_accion_en_la_base(acciones, dispositivos, "chiller")
+    agregar_accion_en_la_base(acciones, dispositivos, "bomba_chiller")
+
+    agregar_accion_nula(acciones, "calentador")
+    agregar_accion_nula(acciones, "bomba_calentador")
+
+    return acciones
+}
+
+
+function log(req, res, next) {
+    console.log(req.body)
+    next()
+}
+
 
 MongoClient.connect('mongodb://heroku_jtg8f10j:m8eofmkrgrvh3uqop33frikkig@ds129028.mlab.com:29028/heroku_jtg8f10j', function(err, client) {
     if (err) {
@@ -296,11 +142,8 @@ MongoClient.connect('mongodb://heroku_jtg8f10j:m8eofmkrgrvh3uqop33frikkig@ds1290
 
     db = client.db('heroku_jtg8f10j'); // whatever your database name is*/
     app.listen(PORT, function () {
-        console.log(`Example app listening on port ${ PORT }`);
+        console.log(`Calcayan automation listening on port ${ PORT }`);
     });
 });
-
-
-
 
 module.exports = app; // for testing

@@ -1,5 +1,22 @@
 $(document).ready(function(){
 
+    var acciono_control = function(event) {
+        fetch('control', {  method: 'POST',
+                            body: JSON.stringify({
+                                model_id: event.currentTarget.attributes.model_id.value,
+                                action: event.currentTarget.attributes.action_parameter.value
+                            }),
+                            headers: {"Content-Type": "application/json"}
+                         }
+        )
+            .then(function(response) {
+                return response.json();
+            })
+            .then(function(dispositivos) {
+                alert(dispositivos)
+            })
+    }
+
     var formatear = function(dispositivos) {
         var disp = _.find(dispositivos, d => d.dispositivo == "bomba_chiller")
         disp.caption = "bomba"
@@ -29,7 +46,7 @@ $(document).ready(function(){
                                     }]
 
         GrillaFrom('#dispositivos', dispositivos, attr_to_controls_map)
-
+        $(".control").click(acciono_control)
     }
 
     var fetch_dispositivos = function() {

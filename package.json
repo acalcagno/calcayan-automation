@@ -47,6 +47,7 @@
     "mongodb-stitch": "^3.0.7",
     "mongoose": "^5.0.10",
     "morgan": "^1.9.0",
-    "popper.js": "^1.14.1"
+    "popper.js": "^1.14.1",
+    "underscore": "^1.9.1"
   }
 }
