@@ -42,7 +42,10 @@ app.post('/mediciones', function(req, res) {
 
     calcular_respuesta_para_el_procesador(mediciones,
         (acciones, mediciones, dispositivos) => {
-            res.send({ "acciones_a_realizar": acciones })
+            var respuesta ={ "acciones_a_realizar": acciones }
+            console.log(respuesta)
+            res.send(respuesta)
+
             update_dispositivos(acciones, mediciones, dispositivos)
         },
         () => res.send(error_mediciones()))
