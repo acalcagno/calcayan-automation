@@ -13,7 +13,7 @@ app.use(bodyParser.urlencoded({
     extended: true
 }));
 
-app.use(log)
+
 
 var MongoClient = require('mongodb').MongoClient;
 
@@ -21,7 +21,7 @@ app.use(express.static(path.join(__dirname, 'public')))
 
 //listar el contenido de la coleccion dispositivos de la base (se usa para generar el panel de control)
 app.get('/dispositivos', function(req, res) {
-    db.collection('dispositivos').find().toArray(function(err, result) {
+    db.collection('dispositivos').find({ $or: [ { dispositivo: "chiller" } , { dispositivo:"bomba_chiller" }]}).toArray(function(err, result) {
         if(err) {
             console.log('Existió un error al recuperar los dispositivos de la base de datos durante la operacion GET "/dispositivos"')
             console.log(err)
@@ -31,7 +31,12 @@ app.get('/dispositivos', function(req, res) {
 })
 
 app.post('/control', function(req, res) {
-    db.collection('dispositivos').update({_id : req.body.model_id }, { $set: { accion: req.body.accion }}, (err, res) => res.end() )
+    db.collection('dispositivos').update({_id : ObjectID(req.body.model_id) }, { $set: { accion: req.body.accion }}, (err, result) => res.end() )
+})
+
+app.use('/mediciones', function(req, res, next) {
+    log()
+    next()
 })
 
 app.post('/mediciones', function(req, res) {
