@@ -160,9 +160,12 @@ configurar_ev = function (acciones, dispositivos, mediciones, nombre_ev) {
                                 acciones.push({"dispositivo": nombre_ev, "accion": 1})
                             }
                         }
-                    }
-                    if(medicion_fermentador.temperatura < fermentador.temp_ideal - fermentador.tolerancia) {
-                        acciones.push({"dispositivo": nombre_ev, "accion": 0})
+                    } else {
+                        if(medicion_fermentador.temperatura < fermentador.temp_ideal - fermentador.tolerancia) {
+                            acciones.push({"dispositivo": nombre_ev, "accion": 0})
+                        } else {
+                            acciones.push({"dispositivo": nombre_ev, "accion": ev.accion})
+                        }
                     }
                 }
             }
