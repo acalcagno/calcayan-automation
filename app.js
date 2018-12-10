@@ -175,10 +175,10 @@ configurar_chiller = function(acciones, dispositivos, mediciones) {
     if(!medicion_chiller) {
         console.log('no se encontro la medicion del chiller')
     } else {
-        /*if (medicion_chiller.temperatura <= 1 ) {
+        if (medicion_chiller.temperatura <= 1 ) {
             console.log('se corta el chiller por anticongelamiento en >= 1 grado')
             acciones.push({"dispositivo": "chiller", "accion": 0})
-        } else {*/
+        } else {
             var chiller = _.find(dispositivos, d => d.dispositivo == "chiller")
             if(!chiller) {
                 console.log('no se encontro el chiller en la db')
@@ -198,7 +198,7 @@ configurar_chiller = function(acciones, dispositivos, mediciones) {
                     }
                 }
             }
-        //}
+        }
     }
 }
 
