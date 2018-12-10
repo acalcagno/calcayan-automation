@@ -36,7 +36,7 @@ app.post('/control', function(req, res) {
 
 app.use('/mediciones', function(req, res, next) {
     log(req, res, next)
-    next()
+    //next()
 })
 
 app.post('/mediciones', function(req, res) {
