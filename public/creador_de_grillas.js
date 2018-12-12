@@ -21,14 +21,13 @@ function tableRowFrom(model, row_template, attr_to_controls_map) {
             _.each(attr_to_controls_map, controlled_attr => {
                 var map_item = _.find(controlled_attr.map, val => val.attr_value == attr_value)
                 if(map_item) {
-                    var control = $(map_item.control_id)
+                    var control = $('[discriminator="' + map_item.control_discriminator + '"]')
                     td.innerHTML = td.innerHTML.replace('{{' + controlled_attr.attr_name + '}}', '')
                     var new_control_instance = control.first().clone()
                     new_control_instance.attr('model_id', model._id)
                     $(td).append(new_control_instance)
                 }
             })
-
             //plain text
             td.innerHTML = td.innerHTML.replace('{{' + attr_name + '}}', attr_value)
         })
