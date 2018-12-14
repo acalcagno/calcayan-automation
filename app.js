@@ -36,10 +36,13 @@ app.get('/dispositivos', function(req, res) {
 
 app.post('/control', function(req, res) {
     upd = {}
-    if (req.body.accion) {
+
+
+    if (typeof req.body.accion !== 'undefined') {
         upd.accion = req.body.accion
     }
-    if (req.body.control) {
+
+    if (typeof req.body.control !== 'undefined') {
         upd.control = req.body.control
     }
 
