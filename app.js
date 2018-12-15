@@ -135,7 +135,7 @@ get_acciones = function(dispositivos, mediciones) {
     configurar_ev(acciones, dispositivos, mediciones, "electrovalvula_frio_fermentador_1")
     agregar_accion_nula(acciones, "electrovalvula_calor_fermentador_1")
 
-    configurar_ev(acciones, dispositivos, "electrovalvula_frio_fermentador_2")
+    configurar_ev(acciones, dispositivos, mediciones, "electrovalvula_frio_fermentador_2")
     agregar_accion_nula(acciones, "electrovalvula_calor_fermentador_2")
 
     agregar_accion_guardada_en_la_base(acciones, dispositivos, "electrovalvula_frio_fermentador_3")
