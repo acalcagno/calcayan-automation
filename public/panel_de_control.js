@@ -57,6 +57,14 @@ $(document).ready(function(){
         disp._id = ev1._id //para el update
         disp.control = ev1.control == "manual" ? "manual" : "auto"
 
+        var ev2 =  _.find(dispositivos, d => d.dispositivo == "electrovalvula_frio_fermentador_2")
+        disp =  _.find(dispositivos, d => d.dispositivo == "fermentador2")
+        disp.caption = "fermentador 2"
+        disp.accion = ev2.accion == 1 ? "cerrar" : "abrir"
+        disp.detalle = disp.temperatura + ' ºC'
+        disp.config = disp.temp_ideal + 'ºC\t&plusmn; ' + disp.tolerancia + 'ºC'
+        disp._id = ev2._id //para el update
+        disp.control = ev2.control == "manual" ? "manual" : "auto"
     }
 
     //solo muestro dispositivos que me interesen para el panel de control
