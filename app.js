@@ -24,6 +24,7 @@ app.get('/dispositivos', function(req, res) {
     db.collection('dispositivos').find({ $or: [{ dispositivo: "chiller" } ,
         { dispositivo:"bomba_chiller" },
         { dispositivo:"fermentador1" },
+        { dispositivo:"fermentador2" },
         { dispositivo: "electrovalvula_frio_fermentador_1"},
         { dispositivo: "electrovalvula_frio_fermentador_2"}
         ]}).toArray(function(err, result) {
