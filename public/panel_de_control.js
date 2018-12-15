@@ -61,7 +61,7 @@ $(document).ready(function(){
 
     //solo muestro dispositivos que me interesen para el panel de control
     var filtrar = function(all_dispositivos) {
-        var lista_filtro = ['bomba_chiller', 'chiller', 'fermentador1']
+        var lista_filtro = ['bomba_chiller', 'chiller', 'fermentador1', 'fermentador2']
         return _.filter(all_dispositivos, d => _.some(lista_filtro, f => { return d.dispositivo == f }))
     }
 
