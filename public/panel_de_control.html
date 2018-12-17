@@ -17,12 +17,53 @@
                         <th>CONTROL</th>
                     </thead>
                     <tbody>
-                        <tr class="row-template" style="display:none">
-                            <td> <b>{{caption}} </b></td>
-                            <td> {{accion}} </td>
-                            <td> {{detalle}} </td>
-                            <td> {{config}} </td>
-                            <td> {{control}} </td>
+                        <tr>
+                            <td><b>chiller</b></td>
+                            <td><button id="btn_chiller" accion=1 class="control btn btn-sm btn-primary">Encender</button></td>
+                            <td><div id="div_temp_chiller">xx ºC</div></td>
+                            <td><div id="div_cfg_chiller">xx ºC &plusmn; xxºC</div></td>
+                            <td>
+                                <div id="cb_chiller" class="control custom-control custom-checkbox" control="automatico" >
+                                    <input type="checkbox" class="custom-control-input" checked>
+                                    <label class="custom-control-label">Auto</label>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><b>bomba</b></td>
+                            <td><button id="btn_bomba" accion=1 class="control btn btn-sm btn-primary">Encender</button></td>
+                            <td>--</td>
+                            <td>--</td>
+                            <td>
+                                <div id="cb_bomba" class="control custom-control custom-checkbox " control="manual" >
+                                    <input type="checkbox" class="custom-control-input" checked>
+                                    <label class="custom-control-label">Auto</label>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><b>fermentador 1</b></td>
+                            <td><button id="btn_fermentador_1" accion=1 class="control btn btn-sm btn-primary">Encender</button></td>
+                            <td><div id="div_temp_fermentador_1">xx ºC</div></td>
+                            <td><div id="div_cfg_fermentador_1">xx ºC &plusmn; xxºC</div></td>
+                            <td>
+                                <div id="cb_fermentador_1" class="control custom-control custom-checkbox " control="manual" >
+                                    <input type="checkbox" class="custom-control-input" checked>
+                                    <label class="custom-control-label">Auto</label>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><b>fermentador 2</b></td>
+                            <td><button id="btn_fermentador_2" accion=1 class="control btn btn-sm btn-primary">Encender</button></td>
+                            <td><div id="div_temp_fermentador_2">xx ºC</div></td>
+                            <td><div id="div_cfg_fermentador_2">xx ºC &plusmn; xxºC</div></td>
+                            <td>
+                                <div id="cb_fermentador_2" class="control custom-control custom-checkbox " control="manual" >
+                                    <input type="checkbox" class="custom-control-input" checked>
+                                    <label class="custom-control-label">Auto</label>
+                                </div>
+                            </td>
                         </tr>
                     </tbody>
                 </table>
