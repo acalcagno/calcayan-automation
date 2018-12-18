@@ -19,6 +19,10 @@ var MongoClient = require('mongodb').MongoClient;
 
 app.use(express.static(path.join(__dirname, 'public')))
 
+app.get('/', function(req, res) {
+    res.redirect('panel_de_control.html');
+})
+
 //listar el contenido de la coleccion dispositivos de la base (se usa para generar el panel de control)
 app.get('/dispositivos', function(req, res) {
     db.collection('dispositivos').find({ $or: [{ dispositivo: "chiller" } ,
