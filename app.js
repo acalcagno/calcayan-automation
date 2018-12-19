@@ -43,7 +43,6 @@ app.get('/dispositivos', function(req, res) {
 app.post('/control', function(req, res) {
     upd = {}
 
-
     if (typeof req.body.accion !== 'undefined') {
         upd.accion = req.body.accion
     }
@@ -55,7 +54,56 @@ app.post('/control', function(req, res) {
     db.collection('dispositivos').update({_id : ObjectID(req.body.model_id) },
         { $set: upd },
     (err, result) => res.end())
+
+    //guardar evento
+    if (typeof req.body.accion !== 'undefined') {
+        db.collection('dispositivos').findOne({_id: ObjectID(req.body.model_id)}, (err, disp) => {
+            if(err) {
+                console.log('no se pudo hallar dispositivo ' + req.body.model_id + ' al intentar guardar el evento')
+            } else {
+
+                var evento ={
+                    dispositivo: disp.dispositivo,
+                    action_type: 'cambio de estado',
+                    to: disp.accion,
+                    at: new Date(),
+                    on: '/control'
+                }
+
+                //si el evento es sobre el chiller
+                if (disp.dispositivo=='chiller') {
+                    evento.temp = disp.temperatura
+                    guardar_evento(evento)
+                } else {
+                    //si el evento es sobre una ev
+                    if (disp.dispositivo.substring(0, "electrovalvula_frio_fermentador".length) == "electrovalvula_frio_fermentador") {
+                        db.collection('dispositivos')
+                                        .findOne({ dispositivo: 'fermentador' + disp.dispositivo.substring('electrovalvula_frio_fermentador_'.length, disp.dispositivo.length)},
+                                        (err, ferm) => {
+                                            if(err) {
+                                                console.log('error buscando el fermentador de la electrovalvula para loguear el evento')
+                                            } else {
+                                                evento.temp = ferm.temperatura
+                                                guardar_evento(evento)
+                                            }
+                                        })
+                    } else {
+                        guardar_evento(evento)
+                    }
+                }
+            }
+        })
+    }
 })
+
+var guardar_evento = function(evento) {
+    db.collection('eventos')
+        .insert(evento, (err) => {
+        if(err) {
+            console.log('error al intentar insertar el evento del dispositivo')
+        }
+    })
+}
 
 app.use('/mediciones', function(req, res, next) {
     log(req, res, next)
@@ -91,6 +139,8 @@ update_dispositivos = function(acciones, mediciones, dispositivos) {
         } else {
             if (disp.accion != a.accion) {
                 db.collection('dispositivos').update({_id: ObjectID(disp._id)}, { $set: {accion: a.accion}})
+                db.collection('eventos').insert({ dispositivo: disp.dispositivo,
+                    tipo: a.accion, at: new Date(), on: '/mediciones' })
             }
         }
     })
