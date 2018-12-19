@@ -249,7 +249,7 @@ configurar_ev = function (acciones, dispositivos, mediciones, nombre_ev) {
                 if (!medicion_fermentador) {
                     console.log('no se encontro la medicion para el fermentador ' + fermentador.dispositivo)
                 } else {
-                    if(medicion_fermentador.temperatura > fermentador.temp_ideal + fermentador.tolerancia) {
+                    if(medicion_fermentador.temperatura >= fermentador.temp_ideal + fermentador.tolerancia) {
                         var medicion_chiller = _.find(mediciones, mc => mc.sensor == "chiller")
                         if(!medicion_chiller) {
                             console.log('no se encontro la medicion del chiller')
@@ -262,7 +262,7 @@ configurar_ev = function (acciones, dispositivos, mediciones, nombre_ev) {
                             }
                         }
                     } else {
-                        if(medicion_fermentador.temperatura < fermentador.temp_ideal - fermentador.tolerancia) {
+                        if(medicion_fermentador.temperatura <= fermentador.temp_ideal - fermentador.tolerancia) {
                             acciones.push({"dispositivo": nombre_ev, "accion": 0})
                         } else {
                             acciones.push({"dispositivo": nombre_ev, "accion": ev.accion})
@@ -279,10 +279,10 @@ configurar_chiller = function(acciones, dispositivos, mediciones) {
     if(!medicion_chiller) {
         console.log('no se encontro la medicion del chiller')
     } else {
-        if (medicion_chiller.temperatura <= 1 ) {
+        /*if (medicion_chiller.temperatura <= 1 ) {
             console.log('se corta el chiller por anticongelamiento en >= 1 grado')
             acciones.push({"dispositivo": "chiller", "accion": 0})
-        } else {
+        } else {*/
             var chiller = _.find(dispositivos, d => d.dispositivo == "chiller")
             if(!chiller) {
                 console.log('no se encontro el chiller en la db')
@@ -301,7 +301,7 @@ configurar_chiller = function(acciones, dispositivos, mediciones) {
                         }
                     }
                 }
-            }
+            /*}*/
         }
     }
 }
