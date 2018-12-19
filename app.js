@@ -62,7 +62,7 @@ app.post('/control', function(req, res) {
                 console.log('no se pudo hallar dispositivo ' + req.body.model_id + ' al intentar guardar el evento')
             } else {
 
-                var evento ={
+                var evento = {
                     dispositivo: disp.dispositivo,
                     action_type: 'cambio de estado',
                     to: disp.accion,
@@ -138,9 +138,37 @@ update_dispositivos = function(acciones, mediciones, dispositivos) {
             console.log('no se encontro el dispositivo ' + a.dispositivo + ' en la base de datos')
         } else {
             if (disp.accion != a.accion) {
-                db.collection('dispositivos').update({_id: ObjectID(disp._id)}, { $set: {accion: a.accion}})
-                db.collection('eventos').insert({ dispositivo: disp.dispositivo,
-                    tipo: a.accion, at: new Date(), on: '/mediciones' })
+                db.collection('dispositivos').update({_id: ObjectID(disp._id)}, { $set: {accion: a.accion} })
+
+
+                var evento = {
+                    dispositivo: disp.dispositivo,
+                    action_type: 'cambio de estado',
+                    to: a.accion,
+                    at: new Date(),
+                    on: '/mediciones',
+                    temp: -1
+                }
+
+                //si el evento es sobre el chiller
+                if (disp.dispositivo=='chiller') {
+                    var medicion_chiller = _.find(mediciones, m => m.sensor == 'chiller')
+                    evento.temp = medicion_chiller.temperatura
+                    guardar_evento(evento)
+                } else {
+                    //si el evento es sobre una ev
+                    if (disp.dispositivo.substring(0, "electrovalvula_frio_fermentador".length) == "electrovalvula_frio_fermentador") {
+                        var ferm = _.find(mediciones, m => m.sensor == 'fermentador' + disp.dispositivo.substring("electrovalvula_frio_fermentador_".length, disp.dispositivo.length))
+                        if (typeof ferm !== 'undefined') {
+                            evento.temp = ferm.temperatura
+                            guardar_evento(evento)
+                        } else {
+                            console.log('error al buscar un fermentador correspondiente a la electrovalvula queriendo guardar el evento')
+                        }
+                    } else {
+                        guardar_evento(evento)
+                    }
+                }
             }
         }
     })
