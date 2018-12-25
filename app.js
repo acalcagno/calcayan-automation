@@ -256,7 +256,7 @@ configurar_ev = function (acciones, dispositivos, mediciones, nombre_ev) {
                         } else {
                             if(medicion_chiller.temperatura >= medicion_fermentador.temperatura ) {
                                 console.log('el fermentador ' + fermentador.dispositivo + ' necesita frio pero el chiller está mas caliente')
-                                acciones.push({"dispositivo": nombre_ev, "accion": 0})
+                                acciones.push({"dispositivo": nombre_ev, "accion": 0, "necesita_frio": true})
                             } else {
                                 acciones.push({"dispositivo": nombre_ev, "accion": 1})
                             }
@@ -285,35 +285,41 @@ configurar_chiller = function(acciones, dispositivos, mediciones) {
     if(!medicion_chiller) {
         console.log('no se encontro la medicion del chiller')
     } else {
-        /*if (medicion_chiller.temperatura <= 1 ) {
-            console.log('se corta el chiller por anticongelamiento en >= 1 grado')
-            acciones.push({"dispositivo": "chiller", "accion": 0})
-        } else {*/
-            var chiller = _.find(dispositivos, d => d.dispositivo == "chiller")
-            if(!chiller) {
-                console.log('no se encontro el chiller en la db')
+        var chiller = _.find(dispositivos, d => d.dispositivo == "chiller")
+        if(!chiller) {
+            console.log('no se encontro el chiller en la db')
+        } else {
+            if (chiller.control == "manual") {
+                agregar_accion_guardada_en_la_base(acciones, dispositivos, "chiller")
             } else {
-                if (chiller.control == "manual") {
-                    agregar_accion_guardada_en_la_base(acciones, dispositivos, "chiller")
+                var ferm_necesita_frio = algun_fermentador_necesita_frio(dispositivos)
+                if (medicion_chiller.temperatura > chiller.temp_ideal + chiller.tolerancia && ferm_necesita_frio) {
+                    acciones.push({"dispositivo": "chiller", "accion": 1})
                 } else {
-                    if (medicion_chiller.temperatura > chiller.temp_ideal + chiller.tolerancia) {
-                        acciones.push({"dispositivo": "chiller", "accion": 1})
-                    } else {
-                        if (medicion_chiller.temperatura < chiller.temp_ideal - chiller.tolerancia) {
-                            if(medicion_chiller.temperatura != -127) {
-                                acciones.push({"dispositivo": "chiller", "accion": 0})
-                            } else {
-                                //dejo como estaba
+                    if (medicion_chiller.temperatura < chiller.temp_ideal - chiller.tolerancia) {
+                        if(medicion_chiller.temperatura != -127) {
+                            acciones.push({"dispositivo": "chiller", "accion": 0})
+                        } else {
+                            //dejo como estaba
+                            if (ferm_necesita_frio) {
                                 acciones.push({"dispositivo": "chiller", "accion": chiller.accion})
                             }
-                        } else {
+                        }
+                    } else {
+                        if (ferm_necesita_frio) {
                             //dejo como estaba
                             acciones.push({"dispositivo": "chiller", "accion": chiller.accion})
                         }
                     }
                 }
-            /*}*/
+            }
         }
+    }
+}
+
+algun_fermentador_necesita_frio = function(dispositivos) {
+    if(!_.some(acciones, a => a.necesita_frio && !alguna_ev_abierta(dispositivos)) ){
+        accion_chiller.accion = 0
     }
 }
 
@@ -335,10 +341,7 @@ configurar_bomba_chiller = function(acciones, dispositivos, mediciones) {
                 if (bomba_chiller.control == "manual") {
                     agregar_accion_guardada_en_la_base(acciones, dispositivos, "bomba_chiller")
                 } else {
-                    var alguna_ev_abierta = _.some(dispositivos, d => {
-                        return (d.accion == 1 && d.dispositivo.substring(0, "electrovalvula_frio_fermentador".length) == "electrovalvula_frio_fermentador")
-                    })
-                    if (alguna_ev_abierta) {
+                    if (alguna_ev_abierta(dispositivos)) {
                         acciones.push({"dispositivo": "bomba_chiller", "accion": 1})
                     } else {
                         acciones.push({"dispositivo": "bomba_chiller", "accion": 0})
@@ -349,6 +352,15 @@ configurar_bomba_chiller = function(acciones, dispositivos, mediciones) {
     }
 }
 
+alguna_ev_abierta = function(dispositivos) {
+    return _.some(dispositivos, d => {
+        return ev_abierta(d)
+    })
+}
+
+ev_abierta = function(d) {
+    return (d.accion == 1 && d.dispositivo.substring(0, "electrovalvula_frio_fermentador".length) == "electrovalvula_frio_fermentador")
+}
 
 fermentador_de = function(nombre_ev, dispositivos) {
     return _.find(dispositivos, d => d.dispositivo == "fermentador" + nombre_ev.substring(nombre_ev.length-1,nombre_ev.length))
