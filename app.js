@@ -292,7 +292,7 @@ configurar_chiller = function(acciones, dispositivos, mediciones) {
             if (chiller.control == "manual") {
                 agregar_accion_guardada_en_la_base(acciones, dispositivos, "chiller")
             } else {
-                var ferm_necesita_frio = algun_fermentador_necesita_frio(dispositivos)
+                var ferm_necesita_frio = algun_fermentador_necesita_frio(acciones, dispositivos)
                 if (medicion_chiller.temperatura > chiller.temp_ideal + chiller.tolerancia && ferm_necesita_frio) {
                     acciones.push({"dispositivo": "chiller", "accion": 1})
                 } else {
@@ -317,10 +317,12 @@ configurar_chiller = function(acciones, dispositivos, mediciones) {
     }
 }
 
-algun_fermentador_necesita_frio = function(dispositivos) {
+algun_fermentador_necesita_frio = function(acciones, dispositivos) {
+
     if(!_.some(acciones, a => a.necesita_frio && !alguna_ev_abierta(dispositivos)) ){
-        accion_chiller.accion = 0
+        return false
     }
+    return true
 }
 
 configurar_bomba_chiller = function(acciones, dispositivos, mediciones) {
