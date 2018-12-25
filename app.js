@@ -263,8 +263,14 @@ configurar_ev = function (acciones, dispositivos, mediciones, nombre_ev) {
                         }
                     } else {
                         if(medicion_fermentador.temperatura <= fermentador.temp_ideal - fermentador.tolerancia) {
-                            acciones.push({"dispositivo": nombre_ev, "accion": 0})
+                            if (medicion_fermentador.temperatura != -127) {
+                                acciones.push({"dispositivo": nombre_ev, "accion": 0})
+                            } else {
+                                //dejo como estaba
+                                acciones.push({"dispositivo": nombre_ev, "accion": ev.accion})
+                            }
                         } else {
+                            //dejo como estaba
                             acciones.push({"dispositivo": nombre_ev, "accion": ev.accion})
                         }
                     }
@@ -294,7 +300,12 @@ configurar_chiller = function(acciones, dispositivos, mediciones) {
                         acciones.push({"dispositivo": "chiller", "accion": 1})
                     } else {
                         if (medicion_chiller.temperatura < chiller.temp_ideal - chiller.tolerancia) {
-                            acciones.push({"dispositivo": "chiller", "accion": 0})
+                            if(medicion_chiller.temperatura != -127) {
+                                acciones.push({"dispositivo": "chiller", "accion": 0})
+                            } else {
+                                //dejo como estaba
+                                acciones.push({"dispositivo": "chiller", "accion": chiller.accion})
+                            }
                         } else {
                             //dejo como estaba
                             acciones.push({"dispositivo": "chiller", "accion": chiller.accion})
