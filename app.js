@@ -303,12 +303,16 @@ configurar_chiller = function(acciones, dispositivos, mediciones) {
                             //dejo como estaba
                             if (ferm_necesita_frio) {
                                 acciones.push({"dispositivo": "chiller", "accion": chiller.accion})
+                            } else {
+                                acciones.push({"dispositivo": "chiller", "accion": 0})
                             }
                         }
                     } else {
                         if (ferm_necesita_frio) {
                             //dejo como estaba
                             acciones.push({"dispositivo": "chiller", "accion": chiller.accion})
+                        } else {
+                            acciones.push({"dispositivo": "chiller", "accion": 0})
                         }
                     }
                 }
@@ -319,7 +323,7 @@ configurar_chiller = function(acciones, dispositivos, mediciones) {
 
 algun_fermentador_necesita_frio = function(acciones, dispositivos) {
 
-    if(!_.some(acciones, a => a.necesita_frio && !alguna_ev_abierta(dispositivos)) ){
+    if(!_.some(acciones, a => a.necesita_frio) && !alguna_ev_abierta(dispositivos) ){
         return false
     }
     return true
