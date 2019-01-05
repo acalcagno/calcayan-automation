@@ -29,8 +29,10 @@ app.get('/dispositivos', function(req, res) {
         { dispositivo:"bomba_chiller" },
         { dispositivo:"fermentador1" },
         { dispositivo:"fermentador2" },
+        { dispositivo:"fermentador3" },
         { dispositivo: "electrovalvula_frio_fermentador_1"},
-        { dispositivo: "electrovalvula_frio_fermentador_2"}
+        { dispositivo: "electrovalvula_frio_fermentador_2"},
+        { dispositivo: "electrovalvula_frio_fermentador_3"}
         ]}).toArray(function(err, result) {
         if(err) {
             console.log('Existió un error al recuperar los dispositivos de la base de datos durante la operacion GET "/dispositivos"')
@@ -221,7 +223,7 @@ get_acciones = function(dispositivos, mediciones) {
     configurar_ev(acciones, dispositivos, mediciones, "electrovalvula_frio_fermentador_2")
     agregar_accion_nula(acciones, "electrovalvula_calor_fermentador_2")
 
-    agregar_accion_guardada_en_la_base(acciones, dispositivos, "electrovalvula_frio_fermentador_3")
+    configurar_ev(acciones, dispositivos, "electrovalvula_frio_fermentador_3")
     agregar_accion_nula(acciones, "electrovalvula_calor_fermentador_3")
 
     configurar_chiller(acciones, dispositivos, mediciones)

@@ -121,6 +121,7 @@ $(document).ready(function(){
 
         render_fermentador('fermentador_1', dispositivos)
         render_fermentador('fermentador_2', dispositivos)
+        render_fermentador('fermentador_3', dispositivos)
     }
 
     //traer el estado de los dispositivos del backend
@@ -153,6 +154,10 @@ $(document).ready(function(){
         var ev2_id = _.find(dispositivos, d => d.dispositivo == "electrovalvula_frio_fermentador_2")._id
         $('#btn_fermentador_2').attr('model_id', ev2_id)
         $('#cb_fermentador_2').attr('model_id', ev2_id)
+
+        var ev3_id = _.find(dispositivos, d => d.dispositivo == "electrovalvula_frio_fermentador_3")._id
+        $('#btn_fermentador_3').attr('model_id', ev3_id)
+        $('#cb_fermentador_3').attr('model_id', ev3_id)
 
         $(".control").click(acciono_control)
         render_controls(dispositivos)
