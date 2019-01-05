@@ -223,7 +223,7 @@ get_acciones = function(dispositivos, mediciones) {
     configurar_ev(acciones, dispositivos, mediciones, "electrovalvula_frio_fermentador_2")
     agregar_accion_nula(acciones, "electrovalvula_calor_fermentador_2")
 
-    configurar_ev(acciones, dispositivos, "electrovalvula_frio_fermentador_3")
+    configurar_ev(acciones, dispositivos, mediciones, "electrovalvula_frio_fermentador_3")
     agregar_accion_nula(acciones, "electrovalvula_calor_fermentador_3")
 
     configurar_chiller(acciones, dispositivos, mediciones)
