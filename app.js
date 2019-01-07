@@ -13,8 +13,6 @@ app.use(bodyParser.urlencoded({
     extended: true
 }));
 
-
-
 var MongoClient = require('mongodb').MongoClient;
 
 app.use(express.static(path.join(__dirname, 'public')))
@@ -26,18 +24,20 @@ app.get('/', function(req, res) {
 //listar el contenido de la coleccion dispositivos de la base (se usa para generar el panel de control)
 app.get('/dispositivos', function(req, res) {
     db.collection('dispositivos').find({ $or: [{ dispositivo: "chiller" } ,
-        { dispositivo:"bomba_chiller" },
-        { dispositivo:"fermentador1" },
-        { dispositivo:"fermentador2" },
-        { dispositivo:"fermentador3" },
-        { dispositivo: "electrovalvula_frio_fermentador_1"},
-        { dispositivo: "electrovalvula_frio_fermentador_2"},
-        { dispositivo: "electrovalvula_frio_fermentador_3"}
-        ]}).toArray(function(err, result) {
+        { dispositivo: 'bomba_chiller' },
+        { dispositivo: 'fermentador1' },
+        { dispositivo: 'fermentador2' },
+        { dispositivo: 'fermentador3' },
+        { dispositivo: 'electrovalvula_frio_fermentador_1'},
+        { dispositivo: 'electrovalvula_frio_fermentador_2'},
+        { dispositivo: 'electrovalvula_frio_fermentador_3'},
+        { dispositivo: 'ultimas_mediciones' }
+    ]}).toArray(function(err, result) {
         if(err) {
             console.log('Existió un error al recuperar los dispositivos de la base de datos durante la operacion GET "/dispositivos"')
             console.log(err)
         }
+        result.push({dispositivo: 'hora_actual', timestamp: new Date()})
         res.send(result)
     })
 })
@@ -109,26 +109,39 @@ var guardar_evento = function(evento) {
 
 app.use('/mediciones', function(req, res, next) {
     log(req, res, next)
-    //next()
+})
+
+app.post('/mediciones', function(req, res, next) {
+    db.collection('dispositivos').update({ dispositivo: 'ultimas_mediciones' }, { $set: { timestamp: new Date() } })
+    next()
 })
 
 app.post('/mediciones', function(req, res) {
     var req_body = req.body;
     var mediciones = req_body.mediciones;
 
-    var ultima_respuesta
-
     calcular_respuesta_para_el_procesador(mediciones,
-        (acciones, mediciones, dispositivos) => {
-            var respuesta ={ "acciones_a_realizar": acciones }
-            console.log(respuesta)
-            res.send(respuesta)
+    (acciones, mediciones, dispositivos) => {
+        var respuesta = { "acciones_a_realizar": acciones }
+        console.log(respuesta)
+        res.send(respuesta)
 
-            update_dispositivos(acciones, mediciones, dispositivos)
-        },
-        () => res.send(error_mediciones()))
-
+        update_dispositivos(acciones, mediciones, dispositivos)
+    },
+    () => res.send(error_mediciones()))
 })
+
+
+get_datetime_ultima_medicion = function(callback) {
+    db.collection('dispositivos').findOne({dispositivo: 'ultimas_mediciones'}, (err, found) => {
+        if (err) {
+            console.log('error buscando la ultima medicion')
+            callback(new Date('0001-01-01T00:00:00Z'))
+        } else {
+            callback(found.timestamp)
+        }
+    })
+}
 
 update_dispositivos = function(acciones, mediciones, dispositivos) {
     var a = acciones
@@ -141,7 +154,6 @@ update_dispositivos = function(acciones, mediciones, dispositivos) {
         } else {
             if (disp.accion != a.accion) {
                 db.collection('dispositivos').update({_id: ObjectID(disp._id)}, { $set: {accion: a.accion} })
-
 
                 var evento = {
                     dispositivo: disp.dispositivo,

@@ -122,6 +122,36 @@ $(document).ready(function(){
         render_fermentador('fermentador_1', dispositivos)
         render_fermentador('fermentador_2', dispositivos)
         render_fermentador('fermentador_3', dispositivos)
+
+        //horarios de mediciones
+        render_horarios(dispositivos)
+    }
+
+    var render_horarios = function(dispositivos) {
+        var hora_actual = new Date(new Date(_.find(dispositivos, d => d.dispositivo == 'hora_actual').timestamp) - time_offset())
+        var ultima_medicion = new Date(new Date(_.find(dispositivos, d => d.dispositivo == 'ultimas_mediciones').timestamp) - time_offset())
+
+
+        // get total seconds between the times
+        var delta = Math.abs(hora_actual - ultima_medicion) / 1000;
+
+        // calculate (and subtract) whole days
+        var days = Math.floor(delta / 86400);
+        delta -= days * 86400;
+
+        // calculate (and subtract) whole hours
+        var hours = Math.floor(delta / 3600) % 24;
+        delta -= hours * 3600;
+
+        // calculate (and subtract) whole minutes
+        var minutes = Math.floor(delta / 60) % 60;
+        delta -= minutes * 60;
+
+        // what's left is seconds
+        var seconds = Math.floor(delta % 60);  // in theory the modulus is not required
+
+
+        $('#div_span').text((hours < 10 ? '0' : '') + hours.toString() + ':' + (minutes < 10 ? '0' : '') + minutes.toString() + ':' + (seconds < 10 ? '0' : '') + seconds.toString())
     }
 
     //traer el estado de los dispositivos del backend
@@ -175,6 +205,11 @@ $(document).ready(function(){
             render_controls(dispositivos)
             setTimeout(loop, 500)
         })
+    }
+
+
+    var time_offset = function() {
+        return -1 * 60 * 60 * 1000
     }
 
     init()
